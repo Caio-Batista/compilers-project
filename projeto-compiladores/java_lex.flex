@@ -1,4 +1,9 @@
-//
+/* Analisador lexico para a disciplina de Compiladores 
+2015.1 - Grupo : Caio Batista
+                 Carlos Interaminense
+                 Rafael Paulino
+*/
+                 
 package analisador;
 
 import java_cup.runtime.*;
@@ -10,6 +15,7 @@ import java_cup.runtime.*;
 %column
 %cup
 
+
 %{
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
@@ -20,6 +26,10 @@ import java_cup.runtime.*;
   }
 %}
 
+
+/* Definicao de palavras/strings, digitos/numeros e espacos
+    em branco para utilizacao das regras mais abaixo */ 
+
 L = [a-zA-Z_]
 D = [0-9]
 WHITE=[ \t\r\n]
@@ -27,6 +37,8 @@ WHITE=[ \t\r\n]
 
 %%
 
+/* Simbolos terminais que serao utilizados pelo analisador
+   sintatico (CUP) */
 
 <YYINITIAL> {
   
@@ -76,6 +88,8 @@ WHITE=[ \t\r\n]
   "this"          {return symbol(sym.THIS); }
   "instanceof"    {return symbol(sym.INSTANCEOF); }
 
+
+/* Tipos primitivos de java */
   "boolean"       {return symbol(sym.BOOLEAN); }
   "byte"          {return symbol(sym.BYTE); }
   "char"          {return symbol(sym.CHAR); }
@@ -86,9 +100,13 @@ WHITE=[ \t\r\n]
   "double"        {return symbol(sym.DOUBLE);}
   "String"        {return symbol(sym.STRING);}
   
+  /* Literais booleanos */
+  
   "true"          {return symbol(sym.TRUE);}
   "false"         {return symbol(sym.FALSE);}
  
+ 
+ /* Separadores */
   "("             {return symbol(sym.LPAREN);}
   ")"             {return symbol(sym.RPAREN);}
   "{"             {return symbol(sym.LBRACE);}
@@ -98,7 +116,8 @@ WHITE=[ \t\r\n]
   ";"             {return symbol(sym.SEMICOLON);}
   ","             {return symbol(sym.COMMA);}
   "."             {return symbol(sym.DOT);}
-
+ 
+ /* operadores relacionais e booleanos */
   "="             {return symbol(sym.EQUAL); }
   ">"             {return symbol(sym.GREATER); }
   "<"             {return symbol(sym.LESS); }
@@ -137,6 +156,7 @@ WHITE=[ \t\r\n]
   ">>="           {return symbol(sym.RSHIFTEQ); }
 
   
+  /* Definicao de espaco em branco, id, numero e comentario */
 
   {WHITE} {/*Ignore*/}
   {L}({L}|{D})* {return symbol(sym.ID);}
@@ -146,13 +166,11 @@ WHITE=[ \t\r\n]
 }
 
 
-
-
-
 /* Caracteres Especiais */
 /*(\b | "\t" | "\n" | "\f")   {lexeme = yytext(); return ESPECIAL;} */
 
 /* Comentarios */
 
 
-
+[^]              { throw new RuntimeException("Illegal character \""+yytext()+
+                             "\" at line "+yyline+", column "+yycolumn); }
