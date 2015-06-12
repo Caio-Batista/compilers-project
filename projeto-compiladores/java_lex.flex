@@ -4,7 +4,7 @@
                  Rafael Paulino
 */
                  
-package analisador;
+
 
 import java_cup.runtime.*;
 
