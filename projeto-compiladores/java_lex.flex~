@@ -163,7 +163,7 @@ WHITE=[ \t\r\n]
   {L}({L}|{D})* {return symbol(sym.ID);}
   ("(-"{D}+")")|{D}+ {return symbol(sym.NUMERO);}
  
-    ( "//" | "/*" | "*/")     {return symbol(sym.COMENTARIO);}
+    ( "//" | "/*" | "*/")     {lexeme = yytext(); return COMENTARIO;}
 }
 
 
