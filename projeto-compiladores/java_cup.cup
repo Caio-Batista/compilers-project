@@ -112,15 +112,99 @@ non terminal floating-point_literal, digits, exponent_part;
 non terminal exponent_indicator, signed_integer, sign, float_type_suffix;
 non terminal boolean_literal, character_literal, single_character;
 non terminal string_literal, string_characters, string_character;
-non terminal null_literal, keyword, 
-non terminal
+non terminal null_literal, keyword, package_dec, import_dec, type_dec;
+non terminal class_modifiers_e, super_e, interfaces_e, class_bode_declarations_e;
+non terminal constructor_modifiers_e, throws_e;
 
 
 
 
 
 
+compilation_unit ::= package_dec_e import_dec_e type_dec_e  // adicionar esses
 
+package_dec ::= package_declaration
+              |
+
+import_dec  ::= import_declarations
+              |
+
+type_dec    ::= type declarations
+              | 
+              
+
+package_declaration ::= PACKAGE package_name ;
+
+import_declarations ::= import_declaration  
+                      | import_declarations import_declaration
+
+import_declaration ::= single_type_import_declaration | type_import_on_demand_declaration
+
+single_type_import_declaration ::= import_type_name ;
+
+type_import_on_demand_declaration ::= import_package_name DOT MULT ;
+
+type_declarations ::= type_declaration | type_declarations_type_declaration
+
+type_declaration ::= class_declaration | interface_declaration | ;   
+
+
+class_declaration ::= class_modifiers_e CLASS ID super_e interfaces_e class_body
+
+class_modifiers_e ::= class_modifiers
+                    |
+
+super_e ::= super
+          | 
+
+interfaces_e ::= interfaces
+               |           
+          
+class_modifiers ::= class_modifier 
+                  | class_modifiers class_modifier
+
+class_modifier ::= PUBLIC  
+                 | ABSTRACT 
+                 | FINAL
+
+super ::= EXTENDS class_type
+
+interfaces ::= IMPLEMENTS interface_type_list
+
+interface_type_list ::= interface_type | interface_type_list COMMA interface_type
+
+class_body ::= LBRACE class_body_declarations_e RBRACE
+
+class_bode_declarations_e ::= class_body_declarations
+                            |
+
+class_body_declarations ::= class_body_declaration
+                          | class_body_declarations class_body_declaration
+
+class_body_declaration ::= class_member_declaration
+                         | static_initializer
+                         | constructor_declaration
+
+class_member_declaration ::= field_declaration
+                           | method_declaration
+
+static_initializer ::= STATIC block
+
+constructor_declaration ::= constructor_modifiers_e constructor_declarator throws_e constructor_body
+
+constructor_modifiers_e ::= constructor_modifiers
+                          |
+
+throws_e ::= throws
+           |
+
+
+constructor_modifiers ::= constructor_modifier
+                        | constructor_modifiers constructor modifier
+
+constructor_modifier ::= PUBLIC | PROTECTED | PRIVATE           
+              
+              
 
 
 
