@@ -67,7 +67,6 @@ WHITE=[ \t\r\n]
   "throws"        {return symbol(sym.THROWS);}
   "import"        {return symbol(sym.IMPORT);}
   "package"       {return symbol(sym.PACKAGE);}
-  "byte"          {return symbol(sym.BYTE);}
   "const"         {return symbol(sym.CONST);}
   
   "abstract"      {return symbol(sym.ABSTRACT);}
