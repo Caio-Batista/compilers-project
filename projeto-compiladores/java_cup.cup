@@ -1,0 +1,104 @@
+import java_cup.runtime.*;
+
+parser code {:
+
+    public void report_error(String message, Object info) {
+        StringBuilder m = new StringBuilder("Error");
+
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+
+            if (s.left >= 0) {
+                m.append(" in line "+(s.left));
+                if (s.right >= 0)
+                    m.append(", column "+(s.right));
+            }
+        }
+
+        m.append(" : "+message);
+
+        /* Print the contents of the StringBuilder 'm', which contains
+           an error message, out on a line. */
+        System.err.println(m);
+    }
+
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+
+terminal CLASS, EXTENDS, IMPLEMENTS, INTERFACE, NEW, BREAK, CASE;
+terminal CONTINUE, DEFAULT, DO, IF, ELSE, FOR, RETURN, SWITCH;
+terminal WHILE, ASSERT, TRY, CATCH, FINALLY, THROW, THROWS, IMPORT;
+terminal PACKAGE, BYTE, CONST, ABSTRACT, FINAL, NATIVE, SYNCHRONIZED;
+terminal TRANSIENT, VOLATILE, STRICTFP, PUBLIC, PROTECTED, PRIVATE;
+terminal STATIC, VOID, NULL, SUPER, THIS, INSTANCEOF, BOOLEAN, BYTE;
+terminal CHAR, SHORT, INT, FLOAT, LONG, DOUBLE, STRING, TRUE, FALSE;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK, SEMICOLON;
+terminal COMMA, DOT, EQUAL, GREATER, LESS, NOT, BITNOT, QUESTION;
+terminal COLON, EQEQ, LTEQ, GTEQ, NOTEQ, ANDAND, OROR, PLUSPLUS;
+terminal MINUSMINUS, PLUS, MINUS, MULT, DIV, AND, OR, XOR, MOD;
+terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ;
+terminal ANDEQ, OREQ, XOREQ, MODEQ, LSHIFTEQ, RSHIFTEQ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
