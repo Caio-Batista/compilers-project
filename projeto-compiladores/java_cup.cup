@@ -278,7 +278,7 @@ block_statements_e ::= block_statements
 
  method_body  ::=  block  | SEMICOLON;
 
- interface_declaration  ::=  interface_modifiers_e  INTERFACE ID  extends_interfaces_e   interface body ;
+ interface_declaration  ::=  interface_modifiers_e  INTERFACE ID  extends_interfaces_e   interface_body ;
 
  extends_interfaces_e ::= extends_interfaces
                         | ;
