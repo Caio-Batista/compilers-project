@@ -450,6 +450,175 @@ finally  ::= FINALLY block;
 
 
 
+constant_expression ::= expression;
+
+expression ::= assignment_expression;
+
+assignment_expression ::= conditional_expression | assignment;
+
+assignment ::= left_hand_side assignment_operator assignment_expression;
+
+left_hand_side ::= expression_name> | field_access | array_access;
+
+assignment_operator ::= EQUAL | MULTEQ | DIVEQ | MODEQ | PLUSEQ | MINUSEQ | LSHIFTEQ | RSHIFTEQ | URSHIFTEQ | ANDEQ | XOREQ | OREQ;
+
+conditional_expression ::= conditional_or_expression | conditional_or_expression  expression COLON conditional_expression;
+
+conditional_or_expression ::= conditional_and_expression | conditional_or_expression OROR conditional_and_expression |;
+
+conditional_and_expression ::= inclusive_or_expression | conditional_and_expression ANDAND inclusive_or_expression;
+
+inclusive_or_expression ::= exclusive_or_expression | inclusive_or_expression | exclusive_or_expression;
+
+exclusive_or_expression ::= and_expression | exclusive_or_expression XOR and_expression;
+
+and_expression ::= equality_expression | and_expression AND equality_expression;
+equality_expression ::= relational_expression | equality_expression EQEQ relational_expression | equality_expression NOTEQ relational_expression;
+
+relational_expression ::= shift_expression | relational_expression LESS shift_expression | relational_expression GREATER shift_expression | relational_expression LTEQ shift_expression | relational_expression GTEQ shift_expression | relational_expression INSTANCEOF reference_type;
+
+shift_expression ::= additive_expression> | shift_expression LSHIFT additive_expression | shift_expression RSHIFT additive_expression | shift_expression URSHIFT additive_expression;
+
+additive_expression ::= multiplicative_expression | additive_expression PLUS multiplicative_expression | additive_expression MINUS multiplicative_expression;
+
+multiplicative_expression ::= unary_expression | multiplicative_expression MULT unary_expression | multiplicative_expression DIV unary_expression | multiplicative_expression MOD unary_expression;
+
+cast_expression ::= LPARENT primitive_type RPARENT unary_expression | LPARENT reference_type RPARENT unary_expression_not_plus_minus;
+
+unary_expression ::= preincrement_expression | predecrement_expression | PLUS unary_expression | MINUS unary_expression | unary_expression_not_plus_minus;
+
+predecrement_expression ::= MINUSMINUS unary_expression;
+
+preincrement_expression ::= PLUSPLUS unary_expression;
+
+unary_expression_not_plus_minus ::= postfix_expression | BITNOT unary_expression | NOT unary_expression | cast_expression;
+
+postdecrement_expression ::= postfix_expression MINUSMINUS;
+
+postincrement_expression ::= postfix_expression PLUSPLUS;
+
+postfix_expression ::= primary | expression_name | postincrement_expression | postdecrement_expression;
+
+method_invocation ::= method_name LPARENT argument_list RPARENT | primary DOT ID LPARENT argument_list RPARENT | SUPER DOT ID LPARENT argument_list RPARENT;
+
+field_access ::= primary DOT ID | SUPER DOT ID;
+
+primary ::= primary_no_new_array | array_creation_expression;
+
+primary_no_new_array ::= literal | THIS | LPARENT expression RPARENT | class_instance_creation_expression | field_access | method_invocation | array_access;
+
+class_instance_creation_expression ::= NEW class_type LPARENT argument_list RPARENT;
+
+argument_list ::= expression | argument_list COMMA expression| ;
+
+array_creation_expression ::= NEW primitive_type dim_exprs dims | NEW class_or_interface_type dim_exprs dims;
+
+dim_exprs ::= dim_expr | dim_exprs dim_expr;
+
+dim_expr ::= LBRACK expression RBRACK;
+
+dims ::= LBRACK RBRACK | dims LBRACK RBRACK | ;
+
+array_access ::= expression_name LBRACK expression RBRACK | primary_no_new_array LBRACK expression RBRACK;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package_name ::= ID | package_name DOT ID;
+type_name ::= ID | package_name DOT ID;
+
+simple_type_name ::= ID;
+
+expression_name ::= ID | ambiguous_name DOT ID;
+
+method_name ::= ID | ambiguous_name DOT ID;
+
+ambiguous_name::= ID | ambiguous_name DOT ID;
+
+literal ::= integer_literal | floating-point_literal | boolean_literal | character_literal | string_literal | null_literal;
+
+integer_literal ::= decimal_integer_literal | hex_integer_literal | octal_integer_literal;
+
+decimal_integer_literal ::= decimal_numeral integer_type_suffix;
+
+hex_integer_literal ::= hex_numeral integer_type_suffix;
+
+octal_integer_literal ::= octal_numeral integer_type_suffix;
+
+integer_type_suffix ::= l | L | ;
+
+decimal_numeral ::= 0 | non_zero_digit digits;
+
+digits ::= digit | digits digit | ;
+
+digit ::= 0 | non_zero_digit;
+
+non_zero_digit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+hex_numeral ::= 0 x hex_digit | 0 X hex_digit | hex_numeral hex_digit;
+
+hex_digit :: = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F;
+
+octal_numeral ::= 0 octal_digit | octal_numeral octal_digit;
+
+octal_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+floating-point_literal ::= digits DOT digits_optional exponent_part float_type_suffix digits exponent_part float_type_suffix;
+
+digits_optional ::= digits |;
+
+exponent_part ::= exponent_indicator signed_integer |;
+
+exponent_indicator ::= e | E;
+
+signed_integer ::= sign digits;
+
+sign ::= PLUS | MINUS |;
+
+float_type_suffix ::= f | F | d | D |;
+
+boolean_literal ::= TRUE | FALSE;
+
+character_literal ::= ' single_character ' | ' escape_sequence ';
+
+single_character ::= input_character except ' and \;
+
+string_literal ::= " string_characters";
+
+string_characters ::= string_character | string_characters string_character |;
+
+string_character ::= input_character except " and \ | escape_character;
+
+null_literal ::= NULL;
+
+keyword ::= ABSTRACT | BOOLEAN | BREAK 
+| BYTE | CASE | CATCH | CHAR | CLASS 
+| CONST | CONTINUE | DEFAULT | DO | DOUBLE 
+| ELSE | EXTENDS | FINAL | FINALLY | FLOAT 
+| FOR | GOTO | IF | IMPLEMENTS | IMPORT | INSTANCEOF 
+| INT | INTERFACE | LONG | NATIVE | NEW | PACKAGE 
+| PRIVATE | PROTECTED | PUBLIC | RETURN | SHORT
+ | STATIC | SUPER | SWITCH | SYNCHRONIZED | THIS 
+ | THROW | THROWS | TRANSIENT | TRY | VOID | VOLATILE 
+ | WHILE;
+
+
+
+
+
+
+
+
 
 
 
