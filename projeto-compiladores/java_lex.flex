@@ -144,6 +144,7 @@ WHITE=[ \t\r\n]
   "<<"            {return symbol(sym.LSHIFT); }
   ">>"            {return symbol(sym.RSHIFT); }
   ">>>"           {return symbol(sym.URSHIFT); }
+  ">>>="          {return symbol(sym.URSHIFTEQ);}
   "+="            {return symbol(sym.PLUSEQ); }
   "-="            {return symbol(sym.MINUSEQ); }
   "*="            {return symbol(sym.MULTEQ); }
