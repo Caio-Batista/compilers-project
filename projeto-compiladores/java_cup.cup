@@ -202,7 +202,7 @@ throws_e ::= throws
 
 
 constructor_modifiers ::= constructor_modifier
-                        | constructor_modifiers constructor modifier;
+                        | constructor_modifiers constructor_modifier;
 
 constructor_modifier ::= PUBLIC | PROTECTED | PRIVATE;           
               
