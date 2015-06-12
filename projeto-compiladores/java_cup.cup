@@ -361,7 +361,7 @@ block_statement ::= local_variable_declaration_statement | statement;
 
 local_variable_declaration_statement ::= local_variable_declaration SEMICOLON;
 
-local_variable_declaration ::= type_variable_declarators;
+local_variable_declaration ::= type variable_declarators;
 
 statement ::= statement_without_trailing_substatement | labeled_statement | if_then_statement | if_then_else_statement | while_statement | for_statement;
 
