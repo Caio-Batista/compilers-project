@@ -3,7 +3,7 @@ PATH_CUPJAR=jflex-1.6.1/lib/java-cup-11a.jar
 
 run: 
 	$(PATH_JFLEX) java_lex.flex
-	java -jar $(PATH_CUPJAR) -interface -parser JavaParser java_cup.cup
+	java -jar $(PATH_CUPJAR) -expect 1000 -interface -parser JavaParser java_cup.cup
 	javac -classpath $(PATH_CUPJAR):. Main.java
 	java -classpath $(PATH_CUPJAR):. Main test.java
 
