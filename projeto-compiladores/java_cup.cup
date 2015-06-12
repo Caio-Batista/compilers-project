@@ -40,7 +40,7 @@ terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK, SEMICOLON;
 terminal COMMA, DOT, EQUAL, GREATER, LESS, NOT, BITNOT, QUESTION;
 terminal COLON, EQEQ, LTEQ, GTEQ, NOTEQ, ANDAND, OROR, PLUSPLUS;
 terminal MINUSMINUS, PLUS, MINUS, MULT, DIV, AND, OR, XOR, MOD;
-terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ, input_character;
+terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ, input_character, escape_character;
 terminal ANDEQ, OREQ, XOREQ, MODEQ, LSHIFTEQ, RSHIFTEQ, ID, NUMERO, COMENTARIO;
 terminal  a , b , c , d , e , f , A , B , C , D , E , F, x, X, l, L, escape_sequence, except;
 // nao terminais
