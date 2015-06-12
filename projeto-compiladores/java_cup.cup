@@ -377,7 +377,7 @@ labeled_statement_no_short_if ::= ID COLON statement_no_short_if;
 
 expression_statement ::= statement_expression SEMICOLON;
 
-statement_expression ::= assignment | preincrement_expression | postincrement_expression | predecrement_expression | postdecrement_expression | method_invocation | class_instance creation_expression;
+statement_expression ::= assignment | preincrement_expression | postincrement_expression | predecrement_expression | postdecrement_expression | method_invocation | class_instance_creation_expression;
 
 if_then_statement::= IF LPAREN expression RPAREN statement;
 
