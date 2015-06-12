@@ -483,7 +483,7 @@ additive_expression ::= multiplicative_expression | additive_expression PLUS mul
 
 multiplicative_expression ::= unary_expression | multiplicative_expression MULT unary_expression | multiplicative_expression DIV unary_expression | multiplicative_expression MOD unary_expression;
 
-cast_expression ::= LPARENT primitive_type RPARENT unary_expression | LPARENT reference_type RPARENT unary_expression_not_plus_minus;
+cast_expression ::= LPAREN primitive_type RPAREN unary_expression | LPAREN reference_type RPAREN unary_expression_not_plus_minus;
 
 unary_expression ::= preincrement_expression | predecrement_expression | PLUS unary_expression | MINUS unary_expression | unary_expression_not_plus_minus;
 
@@ -499,15 +499,15 @@ postincrement_expression ::= postfix_expression PLUSPLUS;
 
 postfix_expression ::= primary | expression_name | postincrement_expression | postdecrement_expression;
 
-method_invocation ::= method_name LPARENT argument_list RPARENT | primary DOT ID LPARENT argument_list RPARENT | SUPER DOT ID LPARENT argument_list RPARENT;
+method_invocation ::= method_name LPAREN argument_list RPAREN | primary DOT ID LPAREN argument_list RPAREN | SUPER DOT ID LPAREN argument_list RPAREN;
 
 field_access ::= primary DOT ID | SUPER DOT ID;
 
 primary ::= primary_no_new_array | array_creation_expression;
 
-primary_no_new_array ::= literal | THIS | LPARENT expression RPARENT | class_instance_creation_expression | field_access | method_invocation | array_access;
+primary_no_new_array ::= literal | THIS | LPAREN expression RPAREN | class_instance_creation_expression | field_access | method_invocation | array_access;
 
-class_instance_creation_expression ::= NEW class_type LPARENT argument_list RPARENT;
+class_instance_creation_expression ::= NEW class_type LPAREN argument_list RPAREN;
 
 argument_list ::= expression | argument_list COMMA expression| ;
 
