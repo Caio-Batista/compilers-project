@@ -591,13 +591,13 @@ boolean_literal ::= TRUE | FALSE;
 
 character_literal ::= ' single_character ' | ' escape_sequence ';
 
-single_character ::= input_character except ' and \;
+single_character ::= input_character except ' AND \;
 
 string_literal ::= " string_characters";
 
 string_characters ::= string_character | string_characters string_character |;
 
-string_character ::= input_character except " and \ | escape_character;
+string_character ::= input_character except " AND \ | escape_character;
 
 null_literal ::= NULL;
 
