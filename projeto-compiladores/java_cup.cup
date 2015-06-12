@@ -132,7 +132,7 @@ package_dec ::= package_declaration
 import_dec  ::= import_declarations
               |;
 
-type_dec    ::= type declarations
+type_dec    ::= type_declarations
               | ;
               
 
@@ -154,8 +154,8 @@ type_declaration ::= class_declaration | interface_declaration | SEMICOLON;
 
 class_declaration ::= class_modifiers_e CLASS ID super_e interfaces_e class_body;
 
-class_modifiers_e ::= class_modifiers;
-                    |
+class_modifiers_e ::= class_modifiers
+                    |;
 super_e ::= super_prefix
           | ;
 
