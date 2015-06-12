@@ -458,7 +458,7 @@ assignment_expression ::= conditional_expression | assignment;
 
 assignment ::= left_hand_side assignment_operator assignment_expression;
 
-left_hand_side ::= expression_name> | field_access | array_access;
+left_hand_side ::= expression_name | field_access | array_access;
 
 assignment_operator ::= EQUAL | MULTEQ | DIVEQ | MODEQ | PLUSEQ | MINUSEQ | LSHIFTEQ | RSHIFTEQ | URSHIFTEQ | ANDEQ | XOREQ | OREQ;
 
@@ -477,7 +477,7 @@ equality_expression ::= relational_expression | equality_expression EQEQ relatio
 
 relational_expression ::= shift_expression | relational_expression LESS shift_expression | relational_expression GREATER shift_expression | relational_expression LTEQ shift_expression | relational_expression GTEQ shift_expression | relational_expression INSTANCEOF reference_type;
 
-shift_expression ::= additive_expression> | shift_expression LSHIFT additive_expression | shift_expression RSHIFT additive_expression | shift_expression URSHIFT additive_expression;
+shift_expression ::= additive_expression | shift_expression LSHIFT additive_expression | shift_expression RSHIFT additive_expression | shift_expression URSHIFT additive_expression;
 
 additive_expression ::= multiplicative_expression | additive_expression PLUS multiplicative_expression | additive_expression MINUS multiplicative_expression;
 
@@ -567,13 +567,13 @@ non_zero_digit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 hex_numeral ::= 0 x hex_digit | 0 X hex_digit | hex_numeral hex_digit;
 
-hex_digit :: = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F;
+hex_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F;
 
 octal_numeral ::= 0 octal_digit | octal_numeral octal_digit;
 
 octal_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-floating-point_literal ::= digits DOT digits_optional exponent_part float_type_suffix digits exponent_part float_type_suffix;
+floating_point_literal ::= digits DOT digits_optional exponent_part float_type_suffix digits exponent_part float_type_suffix;
 
 digits_optional ::= digits |;
 
