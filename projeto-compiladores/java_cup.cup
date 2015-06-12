@@ -34,7 +34,7 @@ terminal CONTINUE, DEFAULT, DO, IF, ELSE, FOR, RETURN, SWITCH;
 terminal WHILE, ASSERT, TRY, CATCH, FINALLY, THROW, THROWS, IMPORT;
 terminal PACKAGE, BYTE, CONST, ABSTRACT, FINAL, NATIVE, SYNCHRONIZED;
 terminal TRANSIENT, VOLATILE, STRICTFP, PUBLIC, PROTECTED, PRIVATE;
-terminal STATIC, VOID, NULL, SUPER, THIS, INSTANCEOF, BOOLEAN, BYTE;
+terminal STATIC, VOID, NULL, THIS, INSTANCEOF, BOOLEAN;
 terminal CHAR, SHORT, INT, FLOAT, LONG, DOUBLE, STRING, TRUE, FALSE;
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK, SEMICOLON;
 terminal COMMA, DOT, EQUAL, GREATER, LESS, NOT, BITNOT, QUESTION;
@@ -68,7 +68,7 @@ non terminal interface_member_declarations, interface_member_declaration;
 non terminal constant_declaration, constant_modifiers;
 non terminal abstract_method_declaration, abstract_method_modifiers;
 non terminal abstract_method_modifier, array_initializer;
-non terminal variable_initializers, variable_initializer;
+non terminal variable_initializers;
 non terminal type, primitive_type, numeric_type, integral_type;
 non terminal floating-point_type, reference_type, class_or_interface_type;
 non terminal class_type, interface_type, array_type, block, block_statements;
@@ -108,7 +108,7 @@ non terminal decimal_integer_literal, hex_integer_literal;
 non terminal octal_integer_literal, integer_type_suffix;
 non terminal decimal_numeral, digits, digit, non_zero_digit;
 non terminal hex_numeral, hex_digit, octal_numeral, octal_digit;
-non terminal floating-point_literal, digits, exponent_part;
+non terminal floating-point_literal, exponent_part;
 non terminal exponent_indicator, signed_integer, sign, float_type_suffix;
 non terminal boolean_literal, character_literal, single_character;
 non terminal string_literal, string_characters, string_character;
@@ -154,7 +154,6 @@ class_declaration ::= class_modifiers_e CLASS ID super_e interfaces_e class_body
 class_modifiers_e ::= class_modifiers
                     |
 
-super_e ::= super
           | 
 
 interfaces_e ::= interfaces

@@ -67,6 +67,7 @@ WHITE=[ \t\r\n]
   "throws"        {return symbol(sym.THROWS);}
   "import"        {return symbol(sym.IMPORT);}
   "package"       {return symbol(sym.PACKAGE);}
+  "byte"          {return symbol(sym.BYTE);}
   "const"         {return symbol(sym.CONST);}
   
   "abstract"      {return symbol(sym.ABSTRACT);}
@@ -83,7 +84,7 @@ WHITE=[ \t\r\n]
   "void"          {return symbol(sym.VOID);}
 
   "null"          {return symbol(sym.NULL); }  
-  "super"         {return symbol(sym.SUPER); }
+ // "super"         {return symbol(sym.SUPER); }
   "this"          {return symbol(sym.THIS); }
   "instanceof"    {return symbol(sym.INSTANCEOF); }
 
