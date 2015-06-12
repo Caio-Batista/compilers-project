@@ -120,7 +120,7 @@ non terminal method_modifiers_e,extends_interfaces_e, interface_modifiers_e;
 non terminal interface_member_declarations_e, abstract_method_modifiers_e;
 non terminal variable_initializers_e, comma_e, import_type_name, import_package_name;
 non terminal class_body_declarations_e, explicit_constructor_invocation_e, catches_optional;
-non terminal expression_optional, identifier_optional;
+non terminal expression_optional, identifier_optional, throws_statement;
 
 
 
