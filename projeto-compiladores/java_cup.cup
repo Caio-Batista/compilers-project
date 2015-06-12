@@ -120,7 +120,7 @@ non terminal method_modifiers_e,extends_interfaces_e, interface_modifiers_e;
 non terminal interface_member_declarations_e, abstract_method_modifiers_e;
 non terminal variable_initializers_e, comma_e, import_type_name, import_package_name;
 non terminal class_body_declarations_e, explicit_constructor_invocation_e, catches_optional;
-non terminal expression_optional, identifier_optional, throws_statement;
+non terminal expression_optional, identifier_optional, throws_statements;
 
 
 
@@ -415,9 +415,9 @@ statement_expression_list ::= statement_expression | statement_expression_list C
 
 break_statement ::= BREAK identifier_optional SEMICOLON;
 
-continue statement ::= CONTINUE identifier_optional SEMICOLON;
+continue_statement ::= CONTINUE identifier_optional SEMICOLON;
 
-return statement ::= RETURN expression_optional SEMICOLON;
+return_statement ::= RETURN expression_optional SEMICOLON;
 
 expression_optional ::= expression |;
 
