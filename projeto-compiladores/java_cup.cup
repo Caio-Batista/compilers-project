@@ -2,7 +2,7 @@ import java_cup.runtime.*;
 
 parser code {:
 
-    public void report_error(String message, Object info) {
+    public void report_fatal_error(String message, Object info) {
         StringBuilder m = new StringBuilder("Error");
 
         if (info instanceof java_cup.runtime.Symbol) {
@@ -21,11 +21,13 @@ parser code {:
            an error message, out on a line. */
         System.err.println(m);
     }
+    /*
 
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
         System.exit(1);
     }
+    */
 :};
 
 // terminais
@@ -140,18 +142,23 @@ type_dec    ::= type_declarations
 
 package_declaration ::= PACKAGE package_name SEMICOLON;
 
+
 package_name ::= ID | package_name DOT ID;
 
+type_name ::= ID | package_name DOT ID;
 
-/*
 import_declarations ::= import_declaration  
                       | import_declarations import_declaration;
 
 import_declaration ::= single_type_import_declaration | type_import_on_demand_declaration;
 
-single_type_import_declaration ::= import_type_name ;
+single_type_import_declaration ::= IMPORT type_name SEMICOLON;
 
-type_import_on_demand_declaration ::= import_package_name DOT MULT SEMICOLON;
+
+type_import_on_demand_declaration ::= IMPORT package_name DOT MULT SEMICOLON;
+
+
+/*
 
 type_declarations ::= type_declaration | type_declarations type_declaration;
 
