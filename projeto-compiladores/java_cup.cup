@@ -1,8 +1,10 @@
 import java_cup.runtime.*;
 
+
+
 parser code {:
 
-    public void report_fatal_error(String message, Object info) {
+    public void report_error(String message, Object info) {
         StringBuilder m = new StringBuilder("Error");
 
         if (info instanceof java_cup.runtime.Symbol) {
@@ -142,33 +144,37 @@ type_dec    ::= type_declarations
 
 package_declaration ::= PACKAGE package_name SEMICOLON;
 
+package_name ::= ID
+               | package_name DOT ID;
 
-package_name ::= ID | package_name DOT ID;
-
-type_name ::= ID | package_name DOT ID;
+type_name ::= ID
+            | package_name DOT ID;
 
 import_declarations ::= import_declaration  
                       | import_declarations import_declaration;
 
-import_declaration ::= single_type_import_declaration | type_import_on_demand_declaration;
+import_declaration ::= single_type_import_declaration
+                      | type_import_on_demand_declaration;
 
 single_type_import_declaration ::= IMPORT type_name SEMICOLON;
 
-
 type_import_on_demand_declaration ::= IMPORT package_name DOT MULT SEMICOLON;
 
+interface_type ::= type_name;
 
-/*
+type_declarations ::= type_declaration
+                    | type_declarations type_declaration;
 
-type_declarations ::= type_declaration | type_declarations type_declaration;
-
-type_declaration ::= class_declaration | interface_declaration | SEMICOLON;   
+type_declaration ::= class_declaration
+                   | interface_declaration
+                   | SEMICOLON;   
 
 
 class_declaration ::= class_modifiers_e CLASS ID super_e interfaces_e class_body;
 
 class_modifiers_e ::= class_modifiers
                     |;
+
 super_e ::= super_prefix
           | ;
 
@@ -190,9 +196,13 @@ interface_type_list ::= interface_type | interface_type_list COMMA interface_typ
 
 class_body ::= LBRACE class_body_declarations_e RBRACE;
 
-class_bode_declarations_e ::= class_body_declarations
+class_body_declarations_e ::= class_body_declarations
                             |;
 
+
+
+
+/*
 class_body_declarations ::= class_body_declaration
                           | class_body_declarations class_body_declaration;
 
