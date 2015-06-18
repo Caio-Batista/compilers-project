@@ -127,6 +127,7 @@ non terminal expression_optional, identifier_optional, throws_statements, digits
 
 compilation_unit ::= package_dec import_dec type_dec;  // adicionar esses
 
+
 package_dec ::= package_declaration
               |;
 
@@ -139,6 +140,10 @@ type_dec    ::= type_declarations
 
 package_declaration ::= PACKAGE package_name SEMICOLON;
 
+package_name ::= ID | package_name DOT ID;
+
+
+/*
 import_declarations ::= import_declaration  
                       | import_declarations import_declaration;
 
@@ -612,7 +617,7 @@ keyword ::= ABSTRACT | BOOLEAN | BREAK
  | THROW | THROWS | TRANSIENT | TRY | VOID | VOLATILE 
  | WHILE;
 
-
+*/
 
 
 
