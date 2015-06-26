@@ -6,15 +6,13 @@ parser code {:
 
     public void report_error(String message, Object info) {
         StringBuilder m = new StringBuilder("Error");
-
+                   
         if (info instanceof java_cup.runtime.Symbol) {
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
 
-            if (s.left  == 0) {
-                m.append(" in line "+(s.left));
-                if (s.right  == 0)
-                    m.append(", column "+(s.right));
-            }
+            m.append(" in line "+(s.left));
+            m.append(", column "+(s.right));
+
         }
 
         m.append(" : "+message);
@@ -48,6 +46,10 @@ terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ, input_characte
 terminal ANDEQ, OREQ, XOREQ, MODEQ, LSHIFTEQ, RSHIFTEQ, ID, NUMERO, COMENTARIO;
 terminal  a , b , c , d , e , f , A , B , C , D , E , F, x, X, l, L, escape_sequence, except;
 // nao terminais
+
+
+
+
 
 non terminal compilation_unit, package_declaration;
 non terminal import_declarations, import_declaration;
@@ -125,6 +127,7 @@ non terminal interface_member_declarations_e, abstract_method_modifiers_e;
 non terminal variable_initializers_e, comma_e, import_type_name, import_package_name;
 non terminal class_body_declarations_e, explicit_constructor_invocation_e, catches_optional;
 non terminal expression_optional, identifier_optional, throws_statements, digits_optional;
+non terminal field_modifier_a, identifier;
 
 
 
@@ -147,8 +150,7 @@ package_declaration ::= PACKAGE package_name SEMICOLON;
 package_name ::= ID
                | package_name DOT ID;
 
-type_name ::= ID
-            | package_name DOT ID;
+type_name ::= package_name;
 
 import_declarations ::= import_declaration  
                       | import_declarations import_declaration;
@@ -200,9 +202,10 @@ class_body_declarations_e ::= class_body_declarations
                             |;
 
 
+class_type ::= interface_type;
 
+simple_type_name ::= ID;
 
-/*
 class_body_declarations ::= class_body_declaration
                           | class_body_declarations class_body_declaration;
 
@@ -228,126 +231,173 @@ constructor_modifiers ::= constructor_modifier
                         | constructor_modifiers constructor_modifier;
 
 constructor_modifier ::= PUBLIC | PROTECTED | PRIVATE;           
-              
-              
-
-
-
-
-
 
 constructor_declarator ::= simple_type_name LPAREN formal_parameter_list_e RPAREN;
 
 formal_parameter_list_e ::= formal_parameter_list
-                          | SEMICOLON;
+                          | ;
 
+formal_parameter_list ::=  formal_parameter 
+                        |  formal_parameter_list  COMMA formal_parameter; 
 
+formal_parameter  ::=  type   variable_declarator_id ;
 
-formal_parameter_list ::=  formal_parameter  |  formal_parameter_list  COMMA formal_parameter; 
+throws  ::= THROWS  class_type_list ;
 
- formal_parameter  ::=  type   variable_declarator_id ;
+class_type_list  ::=  class_type  |  class_type_list  COMMA  class_type ;
 
- throws  ::= THROWS  class_type_list ;
-
- class_type_list  ::=  class_type  |  class_type_list  COMMA  class_type ;
-
- constructor_body  ::= LBRACE  explicit_constructor_invocation_e   block_statements_e  RBRACE;
+constructor_body  ::= LBRACE  explicit_constructor_invocation_e   block_statements_e  RBRACE;
  
- explicit_constructor_invocation_e ::= explicit_constructor_invocation
+explicit_constructor_invocation_e ::= explicit_constructor_invocation
                                      | ;
                                      
 block_statements_e ::= block_statements
                      |;
-                     
-                                                          
-
- explicit_constructor_invocation ::= THIS LPAREN  argument_list_e  RPAREN | SUPER LPAREN  argument_list_e  RPAREN;
+                   
+explicit_constructor_invocation ::= THIS LPAREN  argument_list_e  RPAREN SEMICOLON
+                                  | SUPER LPAREN  argument_list_e  RPAREN SEMICOLON;
  
- argument_list_e ::= argument_list
-                   |;
+argument_list_e ::= argument_list
+                  |;
 
 
- field_declaration  ::=  field_modifiers_e   type   variable_declarators  SEMICOLON;
+//------------------------- analisar a partir daqui--------------------------------//
+
+
+/*
+type ::= primitive_type | reference_type;
+
+primitive_type ::= numeric_type | BOOLEAN;
+
+numeric_type ::= integral_type | floating_point_type;
+
+integral_type ::= BYTE | SHORT | INT | LONG | CHAR;
+
+floating_point_type ::= FLOAT | DOUBLE;
+
+reference_type ::= class_or_interface_type | array_type;
+
+class_or_interface_type ::= class_type;
+
+array_type ::= type LBRACK RBRACK;
+*/
+
+
+
+
+
+
+field_declaration_e ::= | field_declarations;
+
+field_declarations ::=
+	field_declaration | field_declarations field_declaration
+	;
+
+field_declaration ::=
+  variable_declaration
+  | method_declaration
+	|	constructor_declaration
+	|	static_initializer
+	;
+
+
+/*
+field_declaration  ::=  field_modifiers_e   type   variable_declarators  SEMICOLON;
  
- field_modifiers_e ::= field_modifiers
-                     | ;
+field_modifiers_e ::= |field_modifiers;
 
- field_modifiers  ::=  field_modifier  |  field_modifiers   field_modifier; 
+field_modifiers  ::= field_modifier 
+                   | field_modifiers  field_modifier;
 
- field_modifier  ::= PUBLIC | PROTECTED | PRIVATE | STATIC | FINAL | TRANSIENT | VOLATILE;
+field_modifier  ::= constructor_modifier | STATIC | FINAL | TRANSIENT | VOLATILE;
 
- variable_declarators  ::=  variable_declarator  |  variable_declarators  COMMA variable_declarator; 
+variable_declarators  ::=  variable_declarator  |  variable_declarators  COMMA variable_declarator; 
 
- variable_declarator  ::=  variable_declarator_id  |  variable_declarator_id  EQUAL  variable_initializer; 
+variable_declarator  ::=  variable_declarator_id  |  variable_declarator_id  EQUAL  variable_initializer; 
+*/
 
- variable_declarator_id  ::=  ID  |  variable_declarator_id  LBRACK RBRACK;
 
- variable_initializer  ::=  expression  |  array_initializer ;
 
- method_declaration  ::=  method_header   method_body ;
 
- method_header  ::=  method_modifiers_e   result_type   method_declarator   throws_e;
+
+
+
+
+
+
+
+// ------------------------------------ ainda por fazer ------------------------------
+variable_declarator_id  ::=  ID  |  variable_declarator_id  LBRACK RBRACK;
+
+variable_initializer  ::=  expression  |  array_initializer ;
+
+method_declaration  ::=  method_header   method_body ;
+
+method_header  ::=  method_modifiers_e   result_type   method_declarator   throws_e;
  
- method_modifiers_e ::= method_modifiers
+method_modifiers_e ::= method_modifiers
                       |;
+/*
+result_type  ::=  type  | VOID;
 
- result_type  ::=  type  | VOID;
+method_modifiers  ::=  method_modifier  |  method_modifiers   method_modifier ;
 
- method_modifiers  ::=  method_modifier  |  method_modifiers   method_modifier ;
+method_modifier  ::= PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL | SYNCHRONIZED | NATIVE;
 
- method_modifier  ::= PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL | SYNCHRONIZED | NATIVE;
+method_declarator  ::=  ID  LPAREN  formal_parameter_list_e  RPAREN;
 
- method_declarator  ::=  ID  LPAREN  formal_parameter_list_e  RPAREN;
+method_body  ::=  block  | SEMICOLON;
 
- method_body  ::=  block  | SEMICOLON;
+interface_declaration  ::=  interface_modifiers_e  INTERFACE ID  extends_interfaces_e   interface_body ;
 
- interface_declaration  ::=  interface_modifiers_e  INTERFACE ID  extends_interfaces_e   interface_body ;
-
- extends_interfaces_e ::= extends_interfaces
+extends_interfaces_e ::= extends_interfaces
                         | ;
  
- interface_modifiers_e ::= interface_modifiers
+interface_modifiers_e ::= interface_modifiers
                          | ;                      
 
- interface_modifiers  ::=  interface_modifier  |  interface_modifiers   interface_modifier; 
+interface_modifiers  ::=  interface_modifier  |  interface_modifiers   interface_modifier; 
 
- interface_modifier  ::= PUBLIC | ABSTRACT;
+interface_modifier  ::= PUBLIC | ABSTRACT;
 
- extends_interfaces  ::= EXTENDS  interface_type  |  extends_interfaces  COMMA  interface_type ;
 
- interface_body  ::= LBRACE  interface_member_declarations_e  RBRACE;
+
+
+extends_interfaces  ::= EXTENDS  interface_type  |  extends_interfaces  COMMA  interface_type ;
+
+interface_body  ::= LBRACE  interface_member_declarations_e  RBRACE;
  
- interface_member_declarations_e ::= interface_member_declarations
+interface_member_declarations_e ::= interface_member_declarations
                                    |;
 
- interface_member_declarations  ::=  interface_member_declaration  |  interface_member_declarations   interface_member_declaration ;
+interface_member_declarations  ::=  interface_member_declaration  |  interface_member_declarations   interface_member_declaration ;
 
- interface_member_declaration  ::=  constant_declaration  |  abstract_method_declaration ;
+interface_member_declaration  ::=  constant_declaration  |  abstract_method_declaration ;
 
- constant_declaration  ::=  constant_modifiers   type   variable_declarator ;
+constant_declaration  ::=  constant_modifiers   type   variable_declarator ;
 
- constant_modifiers  ::= PUBLIC | STATIC | FINAL;
+constant_modifiers  ::= PUBLIC | STATIC | FINAL;
 
- abstract_method_declaration ::=  abstract_method_modifiers_e   result_type   method_declarator   throws_e SEMICOLON;
+abstract_method_declaration ::=  abstract_method_modifiers_e   result_type   method_declarator   throws_e SEMICOLON;
 
- abstract_method_modifiers_e ::= abstract_method_modifiers
+abstract_method_modifiers_e ::= abstract_method_modifiers
                                | ;
 
- abstract_method_modifiers  ::=  abstract_method_modifier  |  abstract_method_modifiers   abstract_method_modifier ;
+abstract_method_modifiers  ::=  abstract_method_modifier  |  abstract_method_modifiers   abstract_method_modifier ;
 
- abstract_method_modifier  ::= PUBLIC | ABSTRACT;
+abstract_method_modifier  ::= PUBLIC | ABSTRACT;
 
- array_initializer  ::= LBRACE  variable_initializers_e  comma_e  RBRACE;
+array_initializer  ::= LBRACE  variable_initializers_e  comma_e  RBRACE;
  
- variable_initializers_e ::= variable_initializers
+variable_initializers_e ::= variable_initializers
                            |;
                            
- comma_e ::= COMMA
+comma_e ::= COMMA
            |;                          
 
- variable_initializers  ::=  variable_initializer  |  variable_initializers  COMMA  variable_initializer ;
+variable_initializers  ::=  variable_initializer  |  variable_initializers  COMMA  variable_initializer ;
 
- variable_initializer  ::=  expression  |  array_initializer ;
+variable_initializer  ::=  expression  |  array_initializer ;
 
 
 
@@ -370,7 +420,6 @@ class_type ::= type_name;
 interface_type ::= type_name;
 
 array_type ::= type LBRACK RBRACK;
-
 
 
 
@@ -634,11 +683,9 @@ keyword ::= ABSTRACT | BOOLEAN | BREAK
  | THROW | THROWS | TRANSIENT | TRY | VOID | VOLATILE 
  | WHILE;
 
+
+
 */
-
-
-
-
 
 
 

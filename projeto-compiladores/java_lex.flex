@@ -33,6 +33,8 @@ import java_cup.runtime.*;
 L = [a-zA-Z_]
 D = [0-9]
 WHITE=[ \t\r\n]
+StringCharacter = [^\r\n\"\\]
+LineTerminator = \r|\n|\r\n
 
 
 %%
@@ -164,6 +166,32 @@ WHITE=[ \t\r\n]
   ("(-"{D}+")")|{D}+ {return symbol(sym.NUMERO);}
  
     ( "//" | "/*" | "*/")     {return symbol(sym.COMENTARIO);}
+}
+
+
+<STRING> {
+  \"                             { yybegin(YYINITIAL);
+                                   return symbol(sym.STRING_LITERAL, 
+                                                 string.toString()); }
+  
+  {StringCharacter}+             { string.append( yytext() ); }
+  
+  /* escape sequences */
+  "\\b"                          { string.append( '\b' ); }
+  "\\t"                          { string.append( '\t' ); }
+  "\\n"                          { string.append( '\n' ); }
+  "\\f"                          { string.append( '\f' ); }
+  "\\r"                          { string.append( '\r' ); }
+  "\\\""                         { string.append( '\"' ); }
+  "\\'"                          { string.append( '\'' ); }
+  "\\\\"                         { string.append( '\\' ); }
+
+  
+  /* error cases */
+  \\.                            { throw new RuntimeException(
+                                  "Illegal escape sequence \""+yytext()+"\""); }
+  {LineTerminator}               { throw new RuntimeException(
+                                       "Unterminated string at end of line"); }  
 }
 
 
