@@ -61,27 +61,135 @@ non terminal parameter_list,statement,statement_block,static_initializer;
 non terminal string, string_expression,switch_statement,testing_expression;
 non terminal try_statement,type, type_declaration,type_specifier, variable_declaration;
 non terminal variable_declarator, variable_initializer, hile_statement;
+non terminal expressions_e, import_statement_e,type_declaration_e, unique_expression;
+non terminal comparative_expression, opr_reg, modifier_e, extends_e,implements_e;
+non terminal interfaces_name_e,field_declaration_e, class_or_interface_declaration;
+non terminal parameter_list_e,expression_type,expression_type_specifier,arglist_e;
+non terminal parameters_e,signal,symbolic_expressions,class_or_interface_name;
 
 
 
+compilation_unit ::= package_statement import_statement_e type_declaration_e;
+
+identifier ::= ID;
+
+modifier ::= PUBLIC | PRIVATE | PROTECTED | STATIC 
+           | FINAL | NATIVE | SYNCHRONIZED | ABSTRACT 
+           | TRANSIENT;
+	
+
+package_statement ::= PACKAGE package_name SEMICOLON;
+
+package_name ::= identifier
+               |package_name DOT identifier;
+
+import_statement_e ::= 
+					  | import_statement;
+
+type_declaration_e ::= 
+					| type_declaration;
+
+class_declaration ::= modifier_e CLASS identifier extends_e implements_e LBRACE field_declaration_e RBRACE;
 
 
+arglist ::= expression expressions_e; 
 
-arglist ::= expression { "," expression }
-bit_expression ::= ( "~" expression ) | ( expression ( ">>=" | "<<" | ">>" | ">>>" ) expression )
-casting_expression ::= "(" type ")" expression
-character ::= "based on the unicode character set"
-class_declaration ::= { modifier } "class" identifier [ "extends" class_name ] [ "implements" interface_name { "," interface_name } ] "{" { field_declaration } "}"
-class_name ::= identifier | ( package_name "." identifier )
-compilation_unit ::= [ package_statement ] { import_statement } { type_declaration }
-constructor_declaration ::= { modifier } identifier "(" [ parameter_list ] ")" statement_block
-creating_expression ::= "new" ( ( classe_name "(" [ arglist ] ")" ) | ( type_specifier [ "[" expression "]" ] { "[" "]" } ) | ( "(" expression ")" ) )
-decimal_digits ::= "0..9" { "0..9" }
-doc_comment ::= "/**" "... text ..." "*/"
-do_statement ::= "do" statement "while" "(" expression ")" ";"
-exponent_part ::= "e" [ "+" | "-" ] decimal_digits
-expression ::= numeric_expression | testing_expression | logical_expression | string_expression | bit_expression | casting_expression | creating_expression | literal_expression | "null" | "super" | "this" | identifier | ( "(" expression ")" ) | ( expression ( ( "(" [ arglist ] ")" ) | ( "[" expression "]" ) | ( "." expression ) | ( "," expression ) | ( "instanceof" ( class_name | interface_name ) ) ) )
-field_declaration ::= ( [ doc_comment ] ( method_declaration | constructor_declaration | variable_declaration ) ) | static_initializer | ";"
+expressions_e ::= |
+                  COMMA expression;
+
+bit_expression ::= unique_expression  
+				 | comparative_expression;
+
+unique_expression ::= BITNOT expression;
+
+comparative_expression ::= expression  opr_reg expression;
+
+opr_reg ::=  RSHIFTEQ 
+          | LSHIFT 
+          | RSHIFT
+          | URSHIFT;  
+          
+          
+casting_expression ::= LPAREN type RPAREN expression;
+
+character ::= STRING_LITERAL;
+
+
+class_name ::= identifier 
+			 | package_name DOT identifier;
+
+modifier_e ::= 
+             | modifier;
+             
+extends_e ::= 
+			| EXTENDS class_name;	
+
+implements_e ::=
+				| IMPLEMENTS interface_name interfaces_name_e; 
+				
+interfaces_name_e ::= 
+					| COMMA interface_name; 
+					
+field_declaration_e ::=
+					  | field_declaration;
+
+type_declaration ::= class_or_interface_declaration;
+
+class_or_interface_declaration ::= 	class_declaration 
+                                 | interface_declaration;
+                                 		
+constructor_declaration ::=  modifier_e identifier LPAREN  parameter_list_e RPAREN statement_block;
+
+parameter_list_e ::= 
+				   | parameter_list;
+
+creating_expression ::= NEW expression_type;
+
+expression_type ::= class_name LPAREN arglist_e RPAREN  
+                  | type_specifier expression_type_specifier  
+                  | LPAREN expression RPAREN;  
+
+expression_type_specifier ::= LBRACK expression RBRACK
+							| LBRACK RBRACK
+							| ;
+
+arglist_e ::= 
+			| arglist;
+
+decimal_digits ::= NUMERO;
+
+parameter ::= type identifier expression_type_specifier;
+
+parameter_list ::= parameter parameters_e;
+
+parameters_e ::= 
+			   | COMMA parameter;
+				
+
+
+do_statement ::= DO statement WHILE LPAREN expression RPAREN SEMICOLON;
+exponent_part ::= E signal decimal_digits;
+
+signal ::= PLUS 
+         | MINUS;
+
+expression ::= numeric_expression | testing_expression | logical_expression 
+             | string_expression | bit_expression | casting_expression 
+             | creating_expression | literal_expression | NULL | SUPER 
+             | THIS | identifier |  LPAREN expression RPAREN  
+             |  expression symbolic_expressions;
+                 
+symbolic_expressions ::=  LPAREN  arglist_e RPAREN  
+                 |  LBRACK expression RBRACK 
+                 |  DOT expression 
+                 |  COMMA expression 
+                 |  INSTANCEOF  class_or_interface_name;    
+ 
+class_or_interface_name ::= class_name
+						  | interface_name;
+
+/*                 
+field_declaration ::= (( method_declaration | constructor_declaration | variable_declaration ) ) | static_initializer | ";"
 float_literal  ::=  ( decimal_digits "." [ decimal_digits ] [ exponent_part ] [ float_type_suffix ] ) | ( "." decimal_digits [ exponent_part ] [ float_type_suffix ] ) | ( decimal_digits [ exponent_part ] [ float_type_suffix ] )
 
 
@@ -97,14 +205,11 @@ interface_name ::= identifier | ( package_name "." identifier )
 literal_expression ::= integer_literal| float_literal | string | character 
 logical_expression ::=  ( "!" expression ) | ( expression ( "ampersand" | "ampersand=" | "|" | "|=" | "^" | "^="  | ( "ampersand" "ampersand" ) | "||=" | "%" | "%=" ) expression ) | ( expression "?" expression ":" expression ) | "true" | "false"
 method_declaration ::= { modifier } type identifier "(" [ parameter_list ] ")" { "[" "]" } ( statement_block | ";" )
-modifier ::= "public" | "private" | "protected" | "static" | "final" | "native" | "synchronized" | "abstract" | "threadsafe" | "transient"
 numeric_expression ::= ( ( "-" | "++" | "--" ) expression ) | ( expression ( "++"  | "--" ) ) | ( expression ( "+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=" )  expression )
 package_name ::= identifier | ( package_name "." identifier )
-package_statement ::= "package" package_name ";"
 
 
-parameter ::= type identifier { "[" "]" }
-parameter_list ::= parameter { "," parameter }
+
 statement  ::= variable_declaration | ( expression ";" ) | ( statement_block ) | ( if_statement ) | ( do_statement ) | ( while_statement ) | ( for_statement ) | ( try_statement ) | ( switch_statement ) | ( "synchronized" "(" expression ")" statement ) | ( "return" [ expression ] ";" ) | ( "throw" expression ";" ) | ( identifier ":" statement ) | ( "break" [ identifier ] ";" ) | ( "continue" [ identifier ] ";" ) | ( ";" )
 statement_block ::= "{" { statement } "}"
 static_initializer  ::= "static" statement_block
@@ -114,7 +219,7 @@ switch_statement ::= "switch" "(" expression ")" "{" { ( "case" expression ":" )
 testing_expression ::= ( expression ( ">" | "<" | ">=" | "<=" | "==" | "!=" ) expression )
 try_statement ::= "try" statement { "catch" "(" parameter ")" statement } [ "finally" statement ]
 type ::= type_specifier { "[" "]" }
-type_declaration ::= [ doc_comment ] ( class_declaration | interface_declaration ) ";"
+
 type_specifier ::= "boolean" | "byte" | "char" | "short" | "int" | "float" | "long" | "double" | class_name | interface_name 
 variable_declaration ::= { modifier } type variable_declarator { "," variable_declarator } ";"
 variable_declarator ::= identifier { "[" "]" } [ "=" variable_initializer ]
@@ -123,3 +228,4 @@ while_statement ::= "while" "(" expression ")" statement
 
 
 
+*/

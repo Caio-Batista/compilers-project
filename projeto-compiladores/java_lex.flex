@@ -17,6 +17,8 @@ import java_cup.runtime.*;
 
 
 %{
+  StringBuilder string = new StringBuilder();  
+
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
   }
@@ -170,7 +172,7 @@ LineTerminator = \r|\n|\r\n
 }
 
 
-<STRING> {
+<STRING>{
   \"                             { yybegin(YYINITIAL);
                                    return symbol(sym.STRING_LITERAL, 
                                                  string.toString()); }
