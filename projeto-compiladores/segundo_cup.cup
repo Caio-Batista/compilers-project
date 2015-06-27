@@ -66,7 +66,7 @@ non terminal comparative_expression, opr_reg, modifier_e, extends_e,implements_e
 non terminal interfaces_name_e,field_declaration_e, class_or_interface_declaration;
 non terminal parameter_list_e,expression_type,expression_type_specifier,arglist_e;
 non terminal parameters_e,signal,symbolic_expressions,class_or_interface_name;
-
+non terminal types_declaration,decimal_digits_e,exponent_part_e,float_type_suffix_e;
 
 
 compilation_unit ::= package_statement import_statement_e type_declaration_e;
@@ -102,7 +102,8 @@ bit_expression ::= unique_expression
 
 unique_expression ::= BITNOT expression;
 
-comparative_expression ::= expression  opr_reg expression;
+comparative_expression ::= expression opr_reg expression;
+							
 
 opr_reg ::=  RSHIFTEQ 
           | LSHIFT 
@@ -115,8 +116,7 @@ casting_expression ::= LPAREN type RPAREN expression;
 character ::= STRING_LITERAL;
 
 
-class_name ::= identifier 
-			 | package_name DOT identifier;
+class_name ::= package_name;
 
 modifier_e ::= 
              | modifier;
@@ -168,6 +168,7 @@ parameters_e ::=
 
 
 do_statement ::= DO statement WHILE LPAREN expression RPAREN SEMICOLON;
+
 exponent_part ::= E signal decimal_digits;
 
 signal ::= PLUS 
@@ -188,18 +189,37 @@ symbolic_expressions ::=  LPAREN  arglist_e RPAREN
 class_or_interface_name ::= class_name
 						  | interface_name;
 
-/*                 
-field_declaration ::= (( method_declaration | constructor_declaration | variable_declaration ) ) | static_initializer | ";"
-float_literal  ::=  ( decimal_digits "." [ decimal_digits ] [ exponent_part ] [ float_type_suffix ] ) | ( "." decimal_digits [ exponent_part ] [ float_type_suffix ] ) | ( decimal_digits [ exponent_part ] [ float_type_suffix ] )
+                 
+field_declaration ::= types_declaration
+                    | static_initializer 
+                    | SEMICOLON;
+                  
+types_declaration ::=  method_declaration 
+                    | constructor_declaration
+                    | variable_declaration ; 
+                   
+float_literal  ::=  decimal_digits DOT decimal_digits_e  exponent_part_e   float_type_suffix_e  
+                 |  DOT decimal_digits  exponent_part_e float_type_suffix_e 
+                 |  decimal_digits  exponent_part_e  float_type_suffix_e; 
 
+decimal_digits_e ::= 
+				   | decimal_digits;
 
+exponent_part_e ::= 
+				  | exponent_part;
 
-float_type_suffix ::= "f" | "d"
+float_type_suffix_e ::= 
+					 | float_type_suffix;
+
+float_type_suffix ::= F 
+					| D;
+
+/*
 for_statement ::= "for" "(" ( variable_declaration | ( expression ";" ) | ";" ) [ expression ] ";"  [ expression ] ";" ")" statement
 identifier ::= "a..z,$,_" { "a..z,$,_,0..9,unicode character over 00C0" }
 if_statement ::= "if" "(" expression ")" statement [ "else" statement ]
 import_statement ::= "import" ( ( package_name "." "*" ";" ) | ( class_name | interface_name ) ) ";"
-integer_literal ::= ( ( "1..9" { "0..9" } ) | { "0..7" } | ( "0" "x" "0..9a..f" { "0..9a..f" } ) ) [ "l" ]
+integer_literal ::= NUMERO
 interface_declaration ::= { modifier } "interface" identifier [ "extends" interface_name { "," interface_name } ] "{" { field_declaration } "}"
 interface_name ::= identifier | ( package_name "." identifier )
 literal_expression ::= integer_literal| float_literal | string | character 
