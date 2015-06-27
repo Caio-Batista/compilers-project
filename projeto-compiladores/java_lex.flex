@@ -36,6 +36,7 @@ WHITE=[ \t\r\n]
 StringCharacter = [^\r\n\"\\]
 LineTerminator = \r|\n|\r\n
 
+%state STRING
 
 %%
 
