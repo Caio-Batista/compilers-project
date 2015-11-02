@@ -1,0 +1,334 @@
+import java_cup.runtime.*;
+import validation.*;
+
+parser code {:
+
+	public void report_error(String message, Object info) {
+		StringBuilder m = new StringBuilder("Error");
+				   
+		if (info instanceof java_cup.runtime.Symbol) {
+			java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+
+			m.append(" in line "+(s.left));
+			m.append(", column "+(s.right));
+
+		}
+
+		m.append(" : "+message);
+
+		/* Print the contents of the StringBuilder 'm', which contains
+		   an error message, out on a line. */
+		System.err.println(m);
+	}
+
+	public void checkType(){
+		System.out.println(sym.BOOLEAN);
+	}
+
+:};
+
+
+// terminais
+terminal CLASS, EXTENDS, IMPLEMENTS, INTERFACE, NEW, BREAK, CASE;
+terminal CONTINUE, DEFAULT, DO, IF, ELSE, FOR, RETURN, SWITCH;
+terminal WHILE, TRY, CATCH, FINALLY, THROW, IMPORT;
+terminal PACKAGE, BYTE, ABSTRACT, FINAL, NATIVE, SYNCHRONIZED;
+terminal TRANSIENT, VOLATILE,SUPER, STRICTFP, PUBLIC, PROTECTED, PRIVATE;
+terminal STATIC, VOID, NULL, THIS, INSTANCEOF, BOOLEAN;
+terminal INTEGER_LITERAL, FLOAT_LITERAL;
+terminal CHAR, SHORT, INT, FLOAT, LONG, DOUBLE, STRING, TRUE, FALSE;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK, SEMICOLON;
+terminal COMMA, DOT, EQUAL, GREATER, LESS, NOT, BITNOT, QUESTION;
+terminal COLON, EQEQ, LTEQ, GTEQ, NOTEQ, ANDAND, OROR, PLUSPLUS;
+terminal MINUSMINUS, PLUS, MINUS, MULT, DIV, AND, OR, XOR, MOD;
+terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ;
+terminal ANDEQ, OREQ, XOREQ, MODEQ, LSHIFTEQ, RSHIFTEQ, ID;
+terminal STRING_LITERAL;
+
+// nao terminais
+non terminal compilation_unit, identifier, package_name, package_statement_e_aux;
+non terminal package_statement, import_statement_e_aux, import_statement_e;
+non terminal import_statement, type_declaration_e, type_declaration_e_aux;
+non terminal type_declaration, type, class_declaration, interface_declaration;
+non terminal field_declaration_e_aux,modifier_e, modifier, modifier_e_aux;
+non terminal extends_e_aux, implements_e_aux, field_declaration_e, field_declaration;
+non terminal arglist, interface_name_e, simple_interface_name_e, compound_interface_name_e;
+non terminal interface_name, bracks_e_aux, argslist_e_aux, extends_interfaces, static_initializer;
+non terminal expression, numeric_expression, testing_expression, logical_expression, bit_expression;
+non terminal casting_expression, creating_expression, expression_end, expression_e_aux, return_expression;
+non terminal throw_expression, parentheses_expression, literal, statement,  if_else_statement;
+non terminal braced_statement, partial_statement_end, no_statement, if_nested_statement;
+non terminal if_statement, do_statement, while_statement, for_statement, try_statement;
+non terminal catch_e_aux, finally_e_aux, catch_sentence, catches_sentences, switch_statement;
+non terminal switch_cases_default, case_sentence, case_sentences, default_sentences, default_sentence;
+non terminal for_statement_begin, for_statement_others, statements_within_braces, statement_within_braces;
+non terminal statements_within_braces_e_aux, constructor_declaration, variable_declaration, variable_declarator;
+non terminal variable_initializer, variable_initializers_e_aux, variable_initializers, variable_declarators;
+non terminal statement_variable_declaration, variable_declarator_this_super;
+non terminal method_declaration_end, this_super_prefix, parameter, parameter_e_aux, parameter_e, method_declaration;
+
+//#############package##############//
+compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declaration_e_aux;
+package_statement_e_aux ::= | package_statement;
+package_statement ::= PACKAGE package_name SEMICOLON;
+//#############end package##############//
+
+//###################################################################################//
+//###################################################################################//
+
+identifier ::= ID;
+package_name ::= identifier | package_name DOT identifier;
+
+//#############imports##############//
+import_statement_e_aux ::= | import_statement_e;
+import_statement_e ::= import_statement | import_statement_e import_statement;
+import_statement ::= IMPORT package_name SEMICOLON;
+//#############end imports##############//
+
+//###################################################################################//
+//###################################################################################//
+
+literal ::= NULL | STRING_LITERAL | FLOAT_LITERAL |INTEGER_LITERAL| TRUE | FALSE;
+
+type ::= BOOLEAN 	{:parser.checkType(); :} 
+	| BYTE   
+	| CHAR //{:	RESULT = Type.character(); :}
+	| SHORT 
+	| INT  //{:	RESULT = Type.integer(); :}
+	| FLOAT //{:	RESULT = Type.floating(); :}
+	| LONG 	
+	| DOUBLE 
+	| STRING 
+	| VOID;
+
+//#############begin class or interface##############//
+type_declaration_e_aux ::= | type_declaration_e;
+type_declaration_e ::= type_declaration | type_declaration_e type_declaration;
+type_declaration ::= class_declaration | interface_declaration;
+class_declaration ::= modifier_e_aux CLASS identifier extends_e_aux implements_e_aux LBRACE field_declaration_e_aux RBRACE;
+interface_declaration ::= modifier_e_aux INTERFACE identifier extends_interfaces LBRACE field_declaration_e RBRACE;
+//#############end class or interface##############//
+
+//###################################################################################//
+//###################################################################################//
+
+//############# constructor of class ##############//
+constructor_declaration ::= modifier_e_aux identifier LPAREN parameter_e_aux RPAREN braced_statement;
+//############# end constructor of class ##############//
+
+//###################################################################################//
+//###################################################################################//
+
+//############# variables declarations ##############//
+variable_declaration ::= modifier_e_aux type variable_declarators SEMICOLON 
+			| modifier_e_aux package_name variable_declarators SEMICOLON;
+variable_declarators ::= variable_declarator| variable_declarators COMMA variable_declarator;
+variable_declarator ::= identifier bracks_e_aux variable_initializers_e_aux;
+variable_initializers_e_aux ::= | variable_initializer;
+variable_initializers ::= variable_initializers COMMA variable_initializer 
+			 | variable_initializer; 
+variable_initializer ::= EQUAL expression 
+			| EQUAL LBRACE variable_initializers RBRACE | EQUAL LBRACE RBRACE;
+//############# end variables declarations ##############//
+
+//###################################################################################//
+//###################################################################################//
+
+//#############declaration methods##############//
+method_declaration ::= modifier_e_aux type identifier LPAREN parameter_e_aux RPAREN
+			   method_declaration_end | modifier_e_aux package_name 
+			   identifier LPAREN parameter_e_aux RPAREN method_declaration_end;
+method_declaration_end ::= braced_statement | SEMICOLON;
+modifier_e_aux ::= | modifier_e;
+modifier_e ::= modifier | modifier modifier_e;
+modifier ::= ABSTRACT | FINAL | NATIVE | SYNCHRONIZED | TRANSIENT | STATIC | 
+		 PUBLIC | PROTECTED | PRIVATE | STRICTFP | VOLATILE;
+//#############end declaration methods##############//
+
+//#############extends and/or implements##############//
+extends_e_aux ::= | EXTENDS package_name;
+implements_e_aux ::= | IMPLEMENTS interface_name_e;
+interface_name_e ::= simple_interface_name_e | compound_interface_name_e;
+simple_interface_name_e ::= interface_name;
+compound_interface_name_e ::= interface_name_e COMMA interface_name;
+interface_name ::= identifier | package_name DOT identifier;
+//#############end extends and/or implements##############//
+
+
+field_declaration_e_aux ::= | field_declaration_e;
+field_declaration_e ::=	field_declaration | field_declaration_e field_declaration;
+
+field_declaration ::= variable_declaration | method_declaration | constructor_declaration
+			| static_initializer;
+static_initializer ::= STATIC braced_statement;
+
+
+extends_interfaces ::= | EXTENDS interface_name_e;
+
+bracks_e_aux ::= | bracks_e_aux LBRACK RBRACK;
+
+expression_e_aux ::= | expression;
+
+expression ::= numeric_expression |  expression LPAREN expression RPAREN;
+
+numeric_expression ::= testing_expression
+		| numeric_expression:e PLUS testing_expression:e1 {:System.out.println(e);:}
+		| numeric_expression MINUS testing_expression
+		| numeric_expression MULT testing_expression
+		| numeric_expression DIV testing_expression
+		| numeric_expression MOD testing_expression
+		| numeric_expression DIVEQ testing_expression
+		| numeric_expression PLUSEQ testing_expression
+		| numeric_expression MINUSEQ testing_expression
+		| numeric_expression MULTEQ testing_expression
+		| numeric_expression MODEQ testing_expression;
+
+testing_expression ::= logical_expression
+		| testing_expression GREATER logical_expression
+		| testing_expression LESS logical_expression
+		| testing_expression GTEQ logical_expression
+		| testing_expression LTEQ logical_expression
+		| testing_expression EQEQ logical_expression
+		| testing_expression NOTEQ logical_expression;
+
+logical_expression ::= bit_expression
+		| NOT bit_expression
+		| logical_expression AND bit_expression
+		| logical_expression ANDEQ bit_expression
+		| logical_expression OR bit_expression
+		| logical_expression OREQ bit_expression
+		| logical_expression XOR bit_expression
+		| logical_expression XOREQ bit_expression
+		| logical_expression ANDAND bit_expression
+		| logical_expression OROR bit_expression
+		| logical_expression QUESTION expression COLON bit_expression;
+
+bit_expression ::= casting_expression
+		| BITNOT casting_expression
+		| bit_expression RSHIFTEQ casting_expression
+		| bit_expression RSHIFT casting_expression
+		| bit_expression LSHIFT casting_expression
+		| bit_expression URSHIFT casting_expression
+		| bit_expression LSHIFTEQ casting_expression;
+
+casting_expression ::= creating_expression
+		| LPAREN type RPAREN creating_expression
+		| parentheses_expression identifier;
+
+creating_expression ::= expression_end
+		| NEW package_name LPAREN argslist_e_aux RPAREN
+		| type LBRACK expression RBRACK bracks_e_aux
+		| package_name LBRACK expression RBRACK bracks_e_aux
+		| PLUSPLUS expression_end
+		| MINUSMINUS expression_end
+		| MINUS expression_end
+		| creating_expression PLUSPLUS
+		| creating_expression MINUSMINUS;
+
+expression_end ::= identifier:t {:System.out.println(t);:}
+		  | SUPER | THIS | parentheses_expression
+		 | LBRACK expression RBRACK | package_name INSTANCEOF package_name
+			 | literal;
+
+argslist_e_aux ::= | arglist;
+
+arglist ::= expression | arglist COMMA expression;
+
+
+parentheses_expression ::= LPAREN expression RPAREN;
+
+statement ::= statement_variable_declaration
+		| if_else_statement
+		| if_statement
+		| partial_statement_end
+		| while_statement
+		| try_statement
+		| switch_statement
+		| for_statement;
+
+partial_statement_end ::= braced_statement
+		| do_statement
+		| expression SEMICOLON
+		| CONTINUE SEMICOLON
+		| BREAK SEMICOLON
+		| identifier COLON partial_statement_end
+		| return_expression
+		| throw_expression
+		| SYNCHRONIZED LPAREN expression RPAREN partial_statement_end
+		| no_statement;
+
+braced_statement ::= LBRACE statements_within_braces_e_aux RBRACE;
+
+statements_within_braces_e_aux ::= | statements_within_braces;
+
+statements_within_braces ::= statement_within_braces
+		| statements_within_braces statement_within_braces;
+
+statement_within_braces ::= statement;
+
+no_statement ::= SEMICOLON;
+
+return_expression ::= RETURN expression_e_aux SEMICOLON;
+
+throw_expression ::= THROW expression_e_aux SEMICOLON;
+
+//#############condição##############//
+if_else_statement ::= IF LPAREN expression RPAREN if_nested_statement ELSE statement;
+if_nested_statement ::= partial_statement_end;
+if_statement ::= IF LPAREN expression RPAREN statement;
+//#############end condição##############//
+
+
+//#############Laço while (ou do while)##############//
+do_statement ::= DO statement WHILE LPAREN expression RPAREN SEMICOLON;
+while_statement ::= WHILE LPAREN expression RPAREN statement;
+//############# end Laço while##############//
+
+//#############Laço for##############//
+for_statement ::= FOR LPAREN for_statement_begin for_statement_others SEMICOLON for_statement_others RPAREN statement;
+for_statement_begin ::= SEMICOLON | variable_declaration;
+for_statement_others ::= expression_e_aux;
+//#############end Laço for##############//
+
+try_statement ::= TRY braced_statement catch_e_aux finally_e_aux;
+
+catch_e_aux ::=
+		| catches_sentences;
+
+catches_sentences ::= catch_sentence
+		| catches_sentences catch_sentence;
+
+catch_sentence ::= CATCH LPAREN parameter RPAREN braced_statement;
+
+finally_e_aux ::= | FINALLY braced_statement;
+
+//#############switch case##############//
+switch_statement ::= SWITCH LPAREN expression RPAREN LBRACE switch_cases_default RBRACE | SWITCH LPAREN expression RPAREN LBRACE RBRACE;
+switch_cases_default ::= case_sentences | default_sentences | switch_cases_default statement;
+case_sentences ::= case_sentence | switch_cases_default case_sentence;
+case_sentence ::= CASE expression COLON;
+default_sentences ::= default_sentence | switch_cases_default default_sentence;
+default_sentence ::= DEFAULT COLON;
+//############# end switch case##############//
+
+//###################################################################################//
+//###################################################################################//
+
+
+parameter ::= type identifier bracks_e_aux | package_name identifier bracks_e_aux;
+
+parameter_e_aux ::= | parameter_e;
+
+parameter_e ::= parameter | parameter_e COMMA parameter;
+
+
+
+statement_variable_declaration ::= FINAL type variable_declarators SEMICOLON
+		| type variable_declarators SEMICOLON
+		| variable_declarator_this_super SEMICOLON
+		| package_name EQUAL expression SEMICOLON;
+
+
+variable_declarator_this_super ::= this_super_prefix identifier bracks_e_aux variable_initializers_e_aux;
+
+this_super_prefix ::= THIS DOT | SUPER DOT;
