@@ -200,7 +200,7 @@ expression_e_aux ::= | expression;
 expression ::= numeric_expression |  expression LPAREN expression RPAREN;
 
 numeric_expression ::= testing_expression
-		| numeric_expression:e PLUS testing_expression:e1 {:System.out.println("= " +e);:} 
+		| numeric_expression PLUS testing_expression:e1 {:System.out.println("= " +e);:} 
 		| numeric_expression MINUS testing_expression
 		| numeric_expression MULT testing_expression
 		| numeric_expression DIV testing_expression
