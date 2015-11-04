@@ -65,25 +65,22 @@ start with compilation_unit;
 
 //#############package##############//
 compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declaration_e_aux;
-package_statement_e_aux ::= | package_statement;
-package_statement ::= PACKAGE:p package_name:e SEMICOLON{:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
+
+package_statement_e_aux ::= | package_statement:p {:RESULT = p;:};
+
+package_statement ::= PACKAGE:p package_name:e SEMICOLON;//{:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
 //#############end package##############//
 
-//###################################################################################//
-//###################################################################################//
 
 identifier ::= ID:id {:RESULT = id;:};
 package_name ::= identifier:id {:RESULT = id;:}
-		| package_name:pk DOT identifier {:RESULT = pk;:};
+		| package_name:pk DOT identifier;
 
 //#############imports##############//
 import_statement_e_aux ::= | import_statement_e;
 import_statement_e ::= import_statement | import_statement_e import_statement;
 import_statement ::= IMPORT package_name SEMICOLON;
 //#############end imports##############//
-
-//###################################################################################//
-//###################################################################################//
 
 literal ::= NULL:n 		{: RESULT = new Variable(n.toString(), null, "null_literal", n.toString()); :}
 	| STRING_LITERAL:sl 	{: RESULT = new Variable(sl.toString(), null, "string_literal", sl.toString()); :} 
@@ -105,9 +102,12 @@ type ::= BOOLEAN:bl 	{: RESULT = bl; :}
 	| VOID;
 
 //#############begin class or interface##############//
-type_declaration_e_aux ::= | type_declaration_e;
-type_declaration_e ::= type_declaration | type_declaration_e type_declaration;
-type_declaration ::= class_declaration | interface_declaration;
+type_declaration_e_aux ::= | type_declaration_e:t {:RESULT = t;:};
+type_declaration_e ::= type_declaration :t {:RESULT = t;:} 
+			| type_declaration_e type_declaration;
+
+type_declaration ::= class_declaration
+		| interface_declaration;
 class_declaration ::= modifier_e_aux CLASS identifier extends_e_aux implements_e_aux LBRACE field_declaration_e_aux RBRACE;
 interface_declaration ::= modifier_e_aux INTERFACE identifier extends_interfaces LBRACE field_declaration_e RBRACE;
 //#############end class or interface##############//
@@ -130,7 +130,7 @@ variable_declarator ::= identifier bracks_e_aux variable_initializers_e_aux;
 variable_initializers_e_aux ::= | variable_initializer;
 variable_initializers ::= variable_initializers COMMA variable_initializer 
 			 | variable_initializer; 
-variable_initializer ::= EQUAL expression:e 
+variable_initializer ::= EQUAL expression:e {:RESULT = e;:}
 			| EQUAL LBRACE variable_initializers RBRACE | EQUAL LBRACE RBRACE;
 //############# end variables declarations ##############//
 
@@ -141,25 +141,40 @@ variable_initializer ::= EQUAL expression:e
 method_declaration ::= modifier_e_aux type identifier LPAREN parameter_e_aux RPAREN
 			   method_declaration_end | modifier_e_aux package_name 
 			   identifier LPAREN parameter_e_aux RPAREN method_declaration_end;
-method_declaration_end ::= braced_statement | SEMICOLON;
-modifier_e_aux ::= | modifier_e;
-modifier_e ::= modifier | modifier modifier_e;
-modifier ::= ABSTRACT | FINAL | NATIVE | SYNCHRONIZED | TRANSIENT | STATIC | 
-		 PUBLIC | PROTECTED | PRIVATE | STRICTFP | VOLATILE;
+method_declaration_end ::= braced_statement:b {:RESULT = b;:} 
+			| SEMICOLON;
+modifier_e_aux ::= | modifier_e:m {:RESULT = m;:};
+modifier_e ::= modifier:m {:RESULT = m;:} 
+		| modifier modifier_e;
+modifier ::= ABSTRACT:m {:RESULT = m;:} 
+		| FINAL:m {:RESULT = m;:} 
+		| NATIVE:m {:RESULT = m;:} 
+		| SYNCHRONIZED:m {:RESULT = m;:} 
+		| TRANSIENT:m {:RESULT = m;:} 
+		| STATIC:m {:RESULT = m;:} 
+		| PUBLIC:m {:RESULT = m;:} 
+		| PROTECTED:m {:RESULT = m;:} 
+		| PRIVATE:m {:RESULT = m;:} 
+		| STRICTFP:m {:RESULT = m;:} 
+		| VOLATILE:m {:RESULT = m;:};
 //#############end declaration methods##############//
 
 //#############extends and/or implements##############//
 extends_e_aux ::= | EXTENDS package_name;
 implements_e_aux ::= | IMPLEMENTS interface_name_e;
-interface_name_e ::= simple_interface_name_e | compound_interface_name_e;
-simple_interface_name_e ::= interface_name;
+interface_name_e ::= simple_interface_name_e:si {:RESULT = si;:}
+		    | compound_interface_name_e:ci {:RESULT = ci;:};
+
+simple_interface_name_e ::= interface_name:i {:RESULT = i;:};
 compound_interface_name_e ::= interface_name_e COMMA interface_name;
-interface_name ::= identifier | package_name DOT identifier;
+
+interface_name ::= identifier:i {:RESULT = i;:} |
+		   package_name DOT identifier;
 //#############end extends and/or implements##############//
 
 
-field_declaration_e_aux ::= | field_declaration_e;
-field_declaration_e ::=	field_declaration | field_declaration_e field_declaration;
+field_declaration_e_aux ::= | field_declaration_e:f {:RESULT = f;:};
+field_declaration_e ::=	field_declaration:f {:RESULT = f;:} | field_declaration_e field_declaration;
 
 field_declaration ::= variable_declaration | method_declaration | constructor_declaration
 			| static_initializer;
@@ -170,28 +185,45 @@ extends_interfaces ::= | EXTENDS interface_name_e;
 
 bracks_e_aux ::= | bracks_e_aux LBRACK RBRACK;
 
-expression_e_aux ::= | expression;
+expression_e_aux ::= | expression:e {:RESULT = e;:};
 
 expression ::= numeric_expression |  expression LPAREN expression RPAREN;
 
 numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.println("Testing: "+te);:}//{:RESULT = te;:}
-		| numeric_expression:e1 PLUS:p testing_expression:e2 {:System.out.println("Exp1: "+ e1 + "   Exp2: " + e2);:}
-//		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), p, e2); :} 
-		| numeric_expression MINUS testing_expression
-		| numeric_expression MULT testing_expression
-		| numeric_expression DIV testing_expression
-		| numeric_expression MOD testing_expression
-		| numeric_expression DIVEQ testing_expression
+		| numeric_expression:e1 PLUS:p testing_expression:e2 //{:System.out.println(e1.toString() + " "+ p+" " + e2.toString());:}
+		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), p, e2); :} 
+
+		| numeric_expression:e1 MINUS:m testing_expression:e2
+		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), m, e2); :} 
+
+		| numeric_expression:e1 MULT:m testing_expression:e2
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :} 	
+
+		| numeric_expression:e1 DIV:d testing_expression:e2
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), d, e2); :} 	
+
+		| numeric_expression:e1 MOD:m testing_expression:e2
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :} 	
+
+		| numeric_expression DIVEQ testing_expression		
 		| numeric_expression PLUSEQ testing_expression
 		| numeric_expression MINUSEQ testing_expression
 		| numeric_expression MULTEQ testing_expression
 		| numeric_expression MODEQ testing_expression;
 
 testing_expression ::= logical_expression:le {:RESULT = le;:}
-		| testing_expression GREATER logical_expression
-		| testing_expression LESS logical_expression
-		| testing_expression GTEQ logical_expression
-		| testing_expression LTEQ logical_expression
+		| testing_expression:e1 GREATER:g logical_expression:e2
+//		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), g, e2); :}
+
+		| testing_expression:e1 LESS:l logical_expression:e2
+//		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), l, e2); :}
+
+		| testing_expression:e1 GTEQ:g logical_expression:e2
+//		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), g, e2); :}
+
+		| testing_expression:e1 LTEQ:l logical_expression:e2
+//		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), l, e2); :}
+
 		| testing_expression EQEQ logical_expression
 		| testing_expression NOTEQ logical_expression;
 

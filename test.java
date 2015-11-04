@@ -23,7 +23,8 @@ public class TestClass
 		this.name = name;
 		this.cpf = cpf;
 		int x = 10, y = 20;
-		int z = 10 + 20;
+		double f = 2;
+		double z = 10 + 20;
 	}
 	/*Test creating Methods*/
 	public String getName()
