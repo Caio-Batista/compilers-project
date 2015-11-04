@@ -72,8 +72,9 @@ package_statement ::= PACKAGE:p package_name:e SEMICOLON{:System.out.println("TE
 //###################################################################################//
 //###################################################################################//
 
-identifier ::= ID;
-package_name ::= identifier | package_name DOT identifier;
+identifier ::= ID:id {:RESULT = id;:};
+package_name ::= identifier:id {:RESULT = id;:}
+		| package_name:pk DOT identifier {:RESULT = pk;:};
 
 //#############imports##############//
 import_statement_e_aux ::= | import_statement_e;
