@@ -130,7 +130,7 @@ variable_declarator ::= identifier bracks_e_aux variable_initializers_e_aux;
 variable_initializers_e_aux ::= | variable_initializer;
 variable_initializers ::= variable_initializers COMMA variable_initializer 
 			 | variable_initializer; 
-variable_initializer ::= EQUAL expression 
+variable_initializer ::= EQUAL expression:e 
 			| EQUAL LBRACE variable_initializers RBRACE | EQUAL LBRACE RBRACE;
 //############# end variables declarations ##############//
 
@@ -174,8 +174,8 @@ expression_e_aux ::= | expression;
 
 expression ::= numeric_expression |  expression LPAREN expression RPAREN;
 
-numeric_expression ::= testing_expression:e
-		| numeric_expression:e1 PLUS:p testing_expression:e2
+numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.println("Testing: "+te);:}//{:RESULT = te;:}
+		| numeric_expression:e1 PLUS:p testing_expression:e2 {:System.out.println("Exp1: "+ e1 + "   Exp2: " + e2);:}
 //		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), p, e2); :} 
 		| numeric_expression MINUS testing_expression
 		| numeric_expression MULT testing_expression
@@ -187,7 +187,7 @@ numeric_expression ::= testing_expression:e
 		| numeric_expression MULTEQ testing_expression
 		| numeric_expression MODEQ testing_expression;
 
-testing_expression ::= logical_expression
+testing_expression ::= logical_expression:le {:RESULT = le;:}
 		| testing_expression GREATER logical_expression
 		| testing_expression LESS logical_expression
 		| testing_expression GTEQ logical_expression
@@ -195,7 +195,7 @@ testing_expression ::= logical_expression
 		| testing_expression EQEQ logical_expression
 		| testing_expression NOTEQ logical_expression;
 
-logical_expression ::= bit_expression
+logical_expression ::= bit_expression:be {:RESULT = be;:}
 		| NOT bit_expression
 		| logical_expression AND bit_expression
 		| logical_expression ANDEQ bit_expression
@@ -207,7 +207,7 @@ logical_expression ::= bit_expression
 		| logical_expression OROR bit_expression
 		| logical_expression QUESTION expression COLON bit_expression;
 
-bit_expression ::= casting_expression
+bit_expression ::= casting_expression:ce {:RESULT = ce;:}
 		| BITNOT casting_expression
 		| bit_expression RSHIFTEQ casting_expression
 		| bit_expression RSHIFT casting_expression
@@ -215,11 +215,11 @@ bit_expression ::= casting_expression
 		| bit_expression URSHIFT casting_expression
 		| bit_expression LSHIFTEQ casting_expression;
 
-casting_expression ::= creating_expression
+casting_expression ::= creating_expression:ce {:RESULT = ce;:}
 		| LPAREN type RPAREN creating_expression
 		| parentheses_expression identifier;
 
-creating_expression ::= expression_end
+creating_expression ::= expression_end:e {:RESULT = e;:}
 		| NEW package_name LPAREN argslist_e_aux RPAREN
 		| type LBRACK expression RBRACK bracks_e_aux
 		| package_name LBRACK expression RBRACK bracks_e_aux
@@ -229,10 +229,10 @@ creating_expression ::= expression_end
 		| creating_expression PLUSPLUS
 		| creating_expression MINUSMINUS;
 
-expression_end ::= identifier
+expression_end ::= identifier:id {:RESULT = id;:}
 		  | SUPER | THIS | parentheses_expression
 		 | LBRACK expression RBRACK | package_name INSTANCEOF package_name
-			 | literal;
+			 | literal:l {:RESULT = l;:};
 
 argslist_e_aux ::= | arglist;
 
