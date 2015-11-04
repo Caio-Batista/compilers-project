@@ -66,7 +66,7 @@ start with compilation_unit;
 //#############package##############//
 compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declaration_e_aux;
 package_statement_e_aux ::= | package_statement;
-package_statement ::= PACKAGE:p package_name:e SEMICOLON{:System.out.println("PACKAGE: "+e);:};
+package_statement ::= PACKAGE:p package_name:e SEMICOLON{:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
 //#############end package##############//
 
 //###################################################################################//
@@ -84,12 +84,12 @@ import_statement ::= IMPORT package_name SEMICOLON;
 //###################################################################################//
 //###################################################################################//
 
-literal ::= NULL:n {: RESULT = new Variable(n.toString(), null, "null_literal", n.toString()); :}
-	| STRING_LITERAL:sl {: RESULT = new Variable(sl.toString(), null, "string_literal", sl.toString()); :} 
-	| FLOAT_LITERAL: fl {: RESULT = new Variable(fl.toString(), null, "floating_literal", fl.toString()); :}
-	|INTEGER_LITERAL: il {: RESULT = new Variable(il.toString(), null, "integer_literal", il.toString()); :}
-	| TRUE :t {: RESULT = new Variable(t.toString(), null, "bool_literal", t.toString()); :}
-	| FALSE:f {: RESULT = new Variable(f.toString(), null, "bool_literal", f.toString()); :}
+literal ::= NULL:n 		{: RESULT = new Variable(n.toString(), null, "null_literal", n.toString()); :}
+	| STRING_LITERAL:sl 	{: RESULT = new Variable(sl.toString(), null, "string_literal", sl.toString()); :} 
+	| FLOAT_LITERAL: fl 	{: RESULT = new Variable(fl.toString(), null, "floating_literal", fl.toString()); :}
+	|INTEGER_LITERAL: il 	{: RESULT = new Variable(il.toString(), null, "integer_literal", il.toString()); :}
+	| TRUE :t 		{: RESULT = new Variable(t.toString(), null, "bool_literal", t.toString()); :}
+	| FALSE:f 		{: RESULT = new Variable(f.toString(), null, "bool_literal", f.toString()); :}
 	;
 
 type ::= BOOLEAN:bl 	{: RESULT = bl; :} 
