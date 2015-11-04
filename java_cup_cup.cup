@@ -1,60 +1,25 @@
-import validation.*;
+import semantic.*;
 
 import java_cup.runtime.*;
 
-parser code {:
-    
-    /* Change the method report_error so it will display the line and
-       column of where the error occurred in the input as well as the
-       reason for the error which is passed into the method in the
-       String 'message'. */
-    public void report_error(String message, Object info) {
+parser code  {: 
+  public void report_error(String message, Object info) {
+    StringBuilder m = new StringBuilder("Error ");
+
+    if (info instanceof java_cup.runtime.Symbol) 
+      m.append( "("+info.toString()+")" );
+     
+    m.append(" : "+message);
    
-        /* Create a StringBuffer called 'm' with the string 'Error' in it. */
-        StringBuffer m = new StringBuffer("Error");
+    System.out.println(m);
+  }
    
-        /* Check if the information passed to the method is the same
-           type as the type java_cup.runtime.Symbol. */
-        if (info instanceof java_cup.runtime.Symbol) {
-            /* Declare a java_cup.runtime.Symbol object 's' with the
-               information in the object info that is being typecasted
-               as a java_cup.runtime.Symbol object. */
-            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-   
-            /* Check if the line number in the input is greater or
-               equal to zero. */
-            if (s.left >= 0) {                
-                /* Add to the end of the StringBuffer error message
-                   the line number of the error in the input. */
-                m.append(" in line "+(s.left+1));   
-                /* Check if the column number in the input is greater
-                   or equal to zero. */
-                if (s.right >= 0)                    
-                    /* Add to the end of the StringBuffer error message
-                       the column number of the error in the input. */
-                    m.append(", column "+(s.right+1));
-            }
-        }
-   
-        /* Add to the end of the StringBuffer error message created in
-           this method the message that was passed into this method. */
-        m.append(" : "+message);
-   
-        /* Print the contents of the StringBuffer 'm', which contains
-           an error message, out on a line. */
-        System.err.println(m);
-    }
-   
-    /* Change the method report_fatal_error so when it reports a fatal
-       error it will display the line and column number of where the
-       fatal error occurred in the input as well as the reason for the
-       fatal error which is passed into the method in the object
-       'message' and then exit.*/
-    public void report_fatal_error(String message, Object info) {
-        report_error(message, info);
-        System.exit(1);
-    }
+  public void report_fatal_error(String message, Object info) {
+    report_error(message, info);
+    throw new RuntimeException("Fatal Syntax Error");
+  }
 :};
+
 
 // terminais
 terminal CLASS, EXTENDS, IMPLEMENTS, INTERFACE, NEW, BREAK, CASE;
@@ -95,10 +60,13 @@ non terminal variable_initializer, variable_initializers_e_aux, variable_initial
 non terminal statement_variable_declaration, variable_declarator_this_super;
 non terminal method_declaration_end, this_super_prefix, parameter, parameter_e_aux, parameter_e, method_declaration;
 
+
+start with compilation_unit;
+
 //#############package##############//
 compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declaration_e_aux;
 package_statement_e_aux ::= | package_statement;
-package_statement ::= PACKAGE package_name SEMICOLON;
+package_statement ::= PACKAGE:p package_name:e SEMICOLON{:System.out.println("PACKAGE: "+e);:};
 //#############end package##############//
 
 //###################################################################################//
@@ -116,17 +84,23 @@ import_statement ::= IMPORT package_name SEMICOLON;
 //###################################################################################//
 //###################################################################################//
 
-literal ::= NULL | STRING_LITERAL | FLOAT_LITERAL |INTEGER_LITERAL| TRUE | FALSE;
+literal ::= NULL:n {: RESULT = new Variable(n.toString(), null, "null_literal", n.toString()); :}
+	| STRING_LITERAL:sl {: RESULT = new Variable(sl.toString(), null, "string_literal", sl.toString()); :} 
+	| FLOAT_LITERAL: fl {: RESULT = new Variable(fl.toString(), null, "floating_literal", fl.toString()); :}
+	|INTEGER_LITERAL: il {: RESULT = new Variable(il.toString(), null, "integer_literal", il.toString()); :}
+	| TRUE :t {: RESULT = new Variable(t.toString(), null, "bool_literal", t.toString()); :}
+	| FALSE:f {: RESULT = new Variable(f.toString(), null, "bool_literal", f.toString()); :}
+	;
 
-type ::= BOOLEAN 	{:RESULT = Type.TypeBoolean();:}
-	| BYTE  	{:RESULT = Type.TypeByte();:}
-	| CHAR 		{:RESULT = Type.TypeCharacter(); :}
-	| SHORT 	{:RESULT = Type.TypeShort(); :}
-	| INT  		{:RESULT = Type.TypeInteger(); :}
-	| FLOAT 	{:RESULT = Type.TypeFloating(); :}
-	| LONG 		{:RESULT = Type.TypeLong(); :}
-	| DOUBLE 	{:RESULT = Type.TypeDouble(); :}
-	| STRING
+type ::= BOOLEAN:bl 	{: RESULT = bl; :} 
+	| BYTE:b  	{: RESULT = b; :}
+	| CHAR:c 	{: RESULT = c; :}
+	| SHORT:s 	{: RESULT = s; :}
+	| INT:i  	{: RESULT = i; :}
+	| FLOAT:f 	{: RESULT = f; :}
+	| LONG:l 	{: RESULT = l; :}
+	| DOUBLE:d 	{: RESULT = d; :}
+	| STRING:s	{: RESULT = s; :}
 	| VOID;
 
 //#############begin class or interface##############//
@@ -199,8 +173,9 @@ expression_e_aux ::= | expression;
 
 expression ::= numeric_expression |  expression LPAREN expression RPAREN;
 
-numeric_expression ::= testing_expression
-		| numeric_expression:e PLUS testing_expression:e1 {:System.out.println("= " +e);:} 
+numeric_expression ::= testing_expression:e
+		| numeric_expression:e1 PLUS:p testing_expression:e2
+//		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), p, e2); :} 
 		| numeric_expression MINUS testing_expression
 		| numeric_expression MULT testing_expression
 		| numeric_expression DIV testing_expression

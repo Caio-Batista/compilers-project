@@ -192,7 +192,8 @@ floatLiteral  = ([0-9]+ \. [0-9]*
 
 <STRING>{
   \"                             { yybegin(YYINITIAL);
-                                   return symbol(sym.STRING_LITERAL, new String(yytext())); }
+                                   return symbol(sym.STRING_LITERAL, 
+                                                 string.toString()); }
   
   {StringCharacter}+             { string.append( yytext() ); }
   
