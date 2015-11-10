@@ -3,18 +3,18 @@ import semantic.*;
 
 import java_cup.runtime.*;
 
-parser code  {: 
+parser code  {:
   public void report_error(String message, Object info) {
     StringBuilder m = new StringBuilder("Error ");
 
-    if (info instanceof java_cup.runtime.Symbol) 
+    if (info instanceof java_cup.runtime.Symbol)
       m.append( "("+info.toString()+")" );
-     
+
     m.append(" : "+message);
-   
+
     System.out.println(m);
   }
-   
+
   public void report_fatal_error(String message, Object info) {
     report_error(message, info);
     throw new RuntimeException("Fatal Syntax Error");
@@ -69,13 +69,13 @@ compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declara
 
 package_statement_e_aux ::= | package_statement:p {:RESULT = p;:};
 
-package_statement ::= PACKAGE:p package_name:e SEMICOLON;//{:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
+package_statement ::= PACKAGE:p package_name:e SEMICOLON {:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
 //#############end package##############//
 
 
 identifier ::= ID:id {:RESULT = id;:};
 package_name ::= identifier:id {:RESULT = id;:}
-		| package_name:pk DOT identifier;
+		| package_name:pk DOT identifier:id {:RESULT = pk + "." + id;:};
 
 //#############imports##############//
 import_statement_e_aux ::= | import_statement_e;
@@ -83,19 +83,19 @@ import_statement_e ::= import_statement | import_statement_e import_statement;
 import_statement ::= IMPORT package_name SEMICOLON;
 //#############end imports##############//
 
-literal ::= NULL:n 		{: RESULT = new Variable(n.toString(), null, "null_literal", n.toString()); :}
-	| STRING_LITERAL:sl 	{: RESULT = new Variable(sl.toString(), null, "string_literal", sl.toString()); :} 
-	| FLOAT_LITERAL: fl 	{: RESULT = new Variable(fl.toString(), null, "floating_literal", fl.toString()); :}
-	|INTEGER_LITERAL: il 	{: RESULT = new Variable(il.toString(), null, "integer_literal", il.toString()); :}
-	| TRUE :t 		{: RESULT = new Variable(t.toString(), null, "bool_literal", t.toString()); :}
-	| FALSE:f 		{: RESULT = new Variable(f.toString(), null, "bool_literal", f.toString()); :}
+literal ::= NULL:n 		{: RESULT = new Variable(n.toString(), null, "null_literal", n); :}
+	| STRING_LITERAL:sl 	{: RESULT = new Variable(sl.toString(), null, "string_literal", sl); :}
+	| FLOAT_LITERAL: fl 	{: RESULT = new Variable(fl.toString(), null, "floating_literal", fl); :}
+	|INTEGER_LITERAL: il 	{: RESULT = new Variable(il.toString(), null, "integer_literal", il); :}
+	| TRUE :t 		{: RESULT = new Variable(t.toString(), null, "bool_literal", t); :}
+	| FALSE:f 		{: RESULT = new Variable(f.toString(), null, "bool_literal", f); :}
 	;
 
-type ::= BOOLEAN:bl 	{: RESULT = bl; :} 
+type ::= BOOLEAN:bl 	{: RESULT = bl; :}
 	| BYTE:b  	{: RESULT = b; :}
 	| CHAR:c 	{: RESULT = c; :}
 	| SHORT:s 	{: RESULT = s; :}
-	| INT:i  	{: RESULT = i; :}
+	| INT:i  	{: RESULT = new Variable(i.toString(), null, "integer_literal", i); :}
 	| FLOAT:f 	{: RESULT = f; :}
 	| LONG:l 	{: RESULT = l; :}
 	| DOUBLE:d 	{: RESULT = d; :}
@@ -104,7 +104,7 @@ type ::= BOOLEAN:bl 	{: RESULT = bl; :}
 
 //#############begin class or interface##############//
 type_declaration_e_aux ::= | type_declaration_e:t {:RESULT = t;:};
-type_declaration_e ::= type_declaration :t {:RESULT = t;:} 
+type_declaration_e ::= type_declaration :t {:RESULT = t;:}
 			| type_declaration_e type_declaration;
 
 type_declaration ::= class_declaration
@@ -124,13 +124,13 @@ constructor_declaration ::= modifier_e_aux identifier LPAREN parameter_e_aux RPA
 //###################################################################################//
 
 //############# variables declarations ##############//
-variable_declaration ::= modifier_e_aux type variable_declarators SEMICOLON 
+variable_declaration ::= modifier_e_aux type:t variable_declarators:v SEMICOLON {:RESULT = new Variable(v.toString(), null, t.toString(), v); ; :}
 			| modifier_e_aux package_name variable_declarators SEMICOLON;
-variable_declarators ::= variable_declarator| variable_declarators COMMA variable_declarator;
-variable_declarator ::= identifier bracks_e_aux variable_initializers_e_aux;
+variable_declarators ::= variable_declarator:v  {:RESULT = v;:} | variable_declarators COMMA variable_declarator ;
+variable_declarator ::= identifier:id bracks_e_aux variable_initializers_e_aux {:RESULT = id; :}; //System.out.println(id);:};
 variable_initializers_e_aux ::= | variable_initializer;
-variable_initializers ::= variable_initializers COMMA variable_initializer 
-			 | variable_initializer; 
+variable_initializers ::= variable_initializers COMMA variable_initializer
+			 | variable_initializer;
 variable_initializer ::= EQUAL expression:e {:RESULT = e;:}
 			| EQUAL LBRACE variable_initializers RBRACE | EQUAL LBRACE RBRACE;
 //############# end variables declarations ##############//
@@ -140,23 +140,23 @@ variable_initializer ::= EQUAL expression:e {:RESULT = e;:}
 
 //#############declaration methods##############//
 method_declaration ::= modifier_e_aux type identifier LPAREN parameter_e_aux RPAREN
-			   method_declaration_end | modifier_e_aux package_name 
+			   method_declaration_end | modifier_e_aux package_name
 			   identifier LPAREN parameter_e_aux RPAREN method_declaration_end;
-method_declaration_end ::= braced_statement:b {:RESULT = b;:} 
+method_declaration_end ::= braced_statement:b {:RESULT = b;:}
 			| SEMICOLON;
 modifier_e_aux ::= | modifier_e:m {:RESULT = m;:};
-modifier_e ::= modifier:m {:RESULT = m;:} 
+modifier_e ::= modifier:m {:RESULT = m;:}
 		| modifier modifier_e;
-modifier ::= ABSTRACT:m {:RESULT = m;:} 
-		| FINAL:m {:RESULT = m;:} 
-		| NATIVE:m {:RESULT = m;:} 
-		| SYNCHRONIZED:m {:RESULT = m;:} 
-		| TRANSIENT:m {:RESULT = m;:} 
-		| STATIC:m {:RESULT = m;:} 
-		| PUBLIC:m {:RESULT = m;:} 
-		| PROTECTED:m {:RESULT = m;:} 
-		| PRIVATE:m {:RESULT = m;:} 
-		| STRICTFP:m {:RESULT = m;:} 
+modifier ::= ABSTRACT:m {:RESULT = m;:}
+		| FINAL:m {:RESULT = m;:}
+		| NATIVE:m {:RESULT = m;:}
+		| SYNCHRONIZED:m {:RESULT = m;:}
+		| TRANSIENT:m {:RESULT = m;:}
+		| STATIC:m {:RESULT = m;:}
+		| PUBLIC:m {:RESULT = m;:}
+		| PROTECTED:m {:RESULT = m;:}
+		| PRIVATE:m {:RESULT = m;:}
+		| STRICTFP:m {:RESULT = m;:}
 		| VOLATILE:m {:RESULT = m;:};
 //#############end declaration methods##############//
 
@@ -191,22 +191,22 @@ expression_e_aux ::= | expression:e {:RESULT = e;:};
 expression ::= numeric_expression |  expression LPAREN expression RPAREN;
 
 numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.println("Testing: "+te);:}//{:RESULT = te;:}
-		| numeric_expression:e1 PLUS:p testing_expression:e2 //{:System.out.println(e1.toString() + " "+ p+" " + e2.toString());:}
-		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), p, e2); :} 
+		| numeric_expression:e1 PLUS:p testing_expression:e2 {:System.out.println(e1 + " XXX "+ p +" XXX " + e2);:}
+		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e2.toString(), p, e1);:}
 
 		| numeric_expression:e1 MINUS:m testing_expression:e2
-		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), m, e2); :} 
+		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), m, e2); :}
 
 		| numeric_expression:e1 MULT:m testing_expression:e2
-		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :} 	
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :}
 
 		| numeric_expression:e1 DIV:d testing_expression:e2
-		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), d, e2); :} 	
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), d, e2); :}
 
 		| numeric_expression:e1 MOD:m testing_expression:e2
-		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :} 	
+		{: RESULT = SemanticAnalyzer.checkMultiplicativeExp(e1.toString(), m, e2); :}
 
-		| numeric_expression DIVEQ testing_expression		
+		| numeric_expression DIVEQ testing_expression
 		| numeric_expression PLUSEQ testing_expression
 		| numeric_expression MINUSEQ testing_expression
 		| numeric_expression MULTEQ testing_expression
