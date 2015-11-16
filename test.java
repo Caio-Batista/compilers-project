@@ -6,6 +6,7 @@ import com.compiler.example;
 /**
 * Class for tests..
 */
+
 public class TestClass
 {
 	/*Test declaration variables*/
@@ -13,17 +14,20 @@ public class TestClass
 	final int cpf;
 	char i;
 	double s;
-	boolean f = true;
-	byte ss;
+	boolean g = true;
+	double ss;
 	short a;
-	
+	aaaaa;
+
+	break;
+
 	/*Test Constructor*/
 	public TestClass(String name, int cpf)
 	{
 		this.name = name;
 		this.cpf = cpf;
 		int x = 10, y = 20;
-		double f = 2;
+		f = 20;
 		double z = 10 + 20;
 	}
 	/*Test creating Methods*/
@@ -53,7 +57,9 @@ public class TestClass
 		if(cpf == 1234)
 		{
 			for(int i = 0; i < 10; i+=1)
-			{/*OK*/}
+			{/*OK*/
+				break;
+			}
 		}
 		else
 		{

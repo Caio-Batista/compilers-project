@@ -4,6 +4,9 @@ import semantic.*;
 import java_cup.runtime.*;
 
 parser code  {:
+
+  public static Context mContext = new Context();
+
   public void report_error(String message, Object info) {
     StringBuilder m = new StringBuilder("Error ");
 
@@ -59,7 +62,7 @@ non terminal for_statement_begin, for_statement_others, statements_within_braces
 non terminal statements_within_braces_e_aux, constructor_declaration, variable_declaration, variable_declarator;
 non terminal variable_initializer, variable_initializers_e_aux, variable_initializers, variable_declarators;
 non terminal statement_variable_declaration, variable_declarator_this_super;
-non terminal method_declaration_end, this_super_prefix, parameter, parameter_e_aux, parameter_e, method_declaration;
+non terminal method_declaration_end, this_super_prefix, parameter, parameter_e_aux, parameter_e, method_declaration, error1;
 
 
 start with compilation_unit;
@@ -124,10 +127,16 @@ constructor_declaration ::= modifier_e_aux identifier LPAREN parameter_e_aux RPA
 //###################################################################################//
 
 //############# variables declarations ##############//
-variable_declaration ::= modifier_e_aux type:t variable_declarators:v SEMICOLON {:RESULT = new Variable(v.toString(), null, t.toString(), v); ; :}
+variable_declaration ::= modifier_e_aux type:t variable_declarators:v SEMICOLON
+                                      {:RESULT = v; System.out.println("Variavel " + v); :}
+                                      | modifier_e_aux  variable_declarators:v SEMICOLON
+                                      {:if (!(v instanceof Variable)){
+                                          System.err.println("Variable not declareted, name: " + v);}:}
 			| modifier_e_aux package_name variable_declarators SEMICOLON;
 variable_declarators ::= variable_declarator:v  {:RESULT = v;:} | variable_declarators COMMA variable_declarator ;
-variable_declarator ::= identifier:id bracks_e_aux variable_initializers_e_aux {:RESULT = id; :}; //System.out.println(id);:};
+variable_declarator ::= identifier:id bracks_e_aux variable_initializers_e_aux
+                                      {:RESULT = new Variable(id.toString(), null, "null", id) ; :};
+
 variable_initializers_e_aux ::= | variable_initializer;
 variable_initializers ::= variable_initializers COMMA variable_initializer
 			 | variable_initializer;
@@ -178,7 +187,7 @@ field_declaration_e_aux ::= | field_declaration_e:f {:RESULT = f;:};
 field_declaration_e ::=	field_declaration:f {:RESULT = f;:} | field_declaration_e field_declaration;
 
 field_declaration ::= variable_declaration | method_declaration | constructor_declaration
-			| static_initializer;
+			| static_initializer | error1 ;
 static_initializer ::= STATIC braced_statement;
 
 
@@ -188,11 +197,11 @@ bracks_e_aux ::= | bracks_e_aux LBRACK RBRACK;
 
 expression_e_aux ::= | expression:e {:RESULT = e;:};
 
-expression ::= numeric_expression |  expression LPAREN expression RPAREN;
+expression ::= numeric_expression:n {:System.out.println(n);:}|  expression LPAREN expression RPAREN;
 
 numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.println("Testing: "+te);:}//{:RESULT = te;:}
-		| numeric_expression:e1 PLUS:p testing_expression:e2 {:System.out.println(e1 + " XXX "+ p +" XXX " + e2);:}
-		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e2.toString(), p, e1);:}
+		| numeric_expression:e1 PLUS:p testing_expression:e2  {:System.out.println(RESULT + "  ");:}
+		//{: RESULT = SemanticAnalyzer.checkAdditiveExp(e2.toString(), p, e1);:}
 
 		| numeric_expression:e1 MINUS:m testing_expression:e2
 		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), m, e2); :}
@@ -212,7 +221,7 @@ numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.prin
 		| numeric_expression MULTEQ testing_expression
 		| numeric_expression MODEQ testing_expression;
 
-testing_expression ::= logical_expression:le {:RESULT = le;:}
+testing_expression ::= logical_expression:le {:RESULT = le;System.out.println(6);:}
 		| testing_expression:e1 GREATER:g logical_expression:e2
 //		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), g, e2); :}
 
@@ -228,7 +237,7 @@ testing_expression ::= logical_expression:le {:RESULT = le;:}
 		| testing_expression EQEQ logical_expression
 		| testing_expression NOTEQ logical_expression;
 
-logical_expression ::= bit_expression:be {:RESULT = be;:}
+logical_expression ::= bit_expression:be {:RESULT = be;System.out.println(5);:}
 		| NOT bit_expression
 		| logical_expression AND bit_expression
 		| logical_expression ANDEQ bit_expression
@@ -240,7 +249,7 @@ logical_expression ::= bit_expression:be {:RESULT = be;:}
 		| logical_expression OROR bit_expression
 		| logical_expression QUESTION expression COLON bit_expression;
 
-bit_expression ::= casting_expression:ce {:RESULT = ce;:}
+bit_expression ::= casting_expression:ce {:RESULT = ce;System.out.println(4);:}
 		| BITNOT casting_expression
 		| bit_expression RSHIFTEQ casting_expression
 		| bit_expression RSHIFT casting_expression
@@ -248,11 +257,11 @@ bit_expression ::= casting_expression:ce {:RESULT = ce;:}
 		| bit_expression URSHIFT casting_expression
 		| bit_expression LSHIFTEQ casting_expression;
 
-casting_expression ::= creating_expression:ce {:RESULT = ce;:}
+casting_expression ::= creating_expression:ce {:RESULT = ce;System.out.println(3);:}
 		| LPAREN type RPAREN creating_expression
 		| parentheses_expression identifier;
 
-creating_expression ::= expression_end:e {:RESULT = e;:}
+creating_expression ::= expression_end:e {:RESULT = e;System.out.println(2);:}
 		| NEW package_name LPAREN argslist_e_aux RPAREN
 		| type LBRACK expression RBRACK bracks_e_aux
 		| package_name LBRACK expression RBRACK bracks_e_aux
@@ -262,7 +271,7 @@ creating_expression ::= expression_end:e {:RESULT = e;:}
 		| creating_expression PLUSPLUS
 		| creating_expression MINUSMINUS;
 
-expression_end ::= identifier:id {:RESULT = id;:}
+expression_end ::= identifier:id {:RESULT = new Variable(id.toString(), null, "integer_literal", id); System.out.println(id.toString() + "  <==  ID"); :}
 		  | SUPER | THIS | parentheses_expression
 		 | LBRACK expression RBRACK | package_name INSTANCEOF package_name
 			 | literal:l {:RESULT = l;:};
@@ -369,3 +378,7 @@ statement_variable_declaration ::= FINAL type variable_declarators SEMICOLON
 variable_declarator_this_super ::= this_super_prefix identifier bracks_e_aux variable_initializers_e_aux;
 
 this_super_prefix ::= THIS DOT | SUPER DOT;
+
+//################################## errors ############################
+error1 ::= BREAK SEMICOLON {:System.err.println("Break statement not found, cannot use 'break' without an iteration");:};
+
