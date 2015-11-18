@@ -26,8 +26,9 @@ public class TestClass
 	{
 		this.name = name;
 		this.cpf = cpf;
-		int x = 10, y = 20;
-		f = 20;
+		int x = 10;
+		y = ;
+		double var = 20;
 		double z = 10 + 20;
 	}
 	/*Test creating Methods*/

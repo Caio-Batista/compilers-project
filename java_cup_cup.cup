@@ -68,11 +68,20 @@ non terminal method_declaration_end, this_super_prefix, parameter, parameter_e_a
 start with compilation_unit;
 
 //#############package##############//
-compilation_unit ::= package_statement_e_aux import_statement_e_aux type_declaration_e_aux;
+compilation_unit ::= package_statement_e_aux:p import_statement_e_aux:i type_declaration_e_aux:t
+                                {:if(p != null && i != null){
+                                     System.out.println("PACKAGE RECONIZED: "+ p + "   IMPORT RECONIZED: "+i);
+                                }else if(p== null &&  i != null){
+                                     System.out.println("IMPORT RECONIZED: "+ i) ;
+                                }else if(p != null &&  i == null){
+                                     System.out.println("PACKAGE RECONIZED: "+ p );
+                               };:};
 
 package_statement_e_aux ::= | package_statement:p {:RESULT = p;:};
 
-package_statement ::= PACKAGE:p package_name:e SEMICOLON {:System.out.println("TERMINAL: "+p + "   NAO TERMINAL: "+e);:};
+package_statement ::= PACKAGE:p package_name:e SEMICOLON
+                                     {: System.out.println("PACKAGE RECONIZED: "+ p );:};
+
 //#############end package##############//
 
 
@@ -83,7 +92,8 @@ package_name ::= identifier:id {:RESULT = id;:}
 //#############imports##############//
 import_statement_e_aux ::= | import_statement_e;
 import_statement_e ::= import_statement | import_statement_e import_statement;
-import_statement ::= IMPORT package_name SEMICOLON;
+import_statement ::= IMPORT package_name:i SEMICOLON
+                                    {:System.out.println("IMPORT RECONIZED: "+ i) ;:};
 //#############end imports##############//
 
 literal ::= NULL:n 		{: RESULT = new Variable(n.toString(), null, "null_literal", n); :}
@@ -107,7 +117,7 @@ type ::= BOOLEAN:bl 	{: RESULT = bl; :}
 
 //#############begin class or interface##############//
 type_declaration_e_aux ::= | type_declaration_e:t {:RESULT = t;:};
-type_declaration_e ::= type_declaration :t {:RESULT = t;:}
+type_declaration_e ::= type_declaration:t {:RESULT = t;:}
 			| type_declaration_e type_declaration;
 
 type_declaration ::= class_declaration
@@ -128,18 +138,28 @@ constructor_declaration ::= modifier_e_aux identifier LPAREN parameter_e_aux RPA
 
 //############# variables declarations ##############//
 variable_declaration ::= modifier_e_aux type:t variable_declarators:v SEMICOLON
-                                      {:RESULT = v; System.out.println("Variavel " + v); :}
+                                      {:RESULT = new Variable(v.toString(), null, t.toString(), v) ;
+                                         System.out.println("Variable declareted: " + v);
+                                       :}
                                       | modifier_e_aux  variable_declarators:v SEMICOLON
-                                      {:if (!(v instanceof Variable)){
-                                          System.err.println("Variable not declareted, name: " + v);}:}
+                                      {: System.err.println("SEMANTIC ERROR: Variable not declareted, name: " + v);:}
 			| modifier_e_aux package_name variable_declarators SEMICOLON;
-variable_declarators ::= variable_declarator:v  {:RESULT = v;:} | variable_declarators COMMA variable_declarator ;
-variable_declarator ::= identifier:id bracks_e_aux variable_initializers_e_aux
-                                      {:RESULT = new Variable(id.toString(), null, "null", id) ; :};
 
-variable_initializers_e_aux ::= | variable_initializer;
-variable_initializers ::= variable_initializers COMMA variable_initializer
-			 | variable_initializer;
+variable_declarators ::= variable_declarator:v  {:RESULT = v;:} | variable_declarators COMMA variable_declarator ;
+
+variable_declarator ::= identifier:id bracks_e_aux variable_initializers_e_aux:var
+                                      {:RESULT = id;
+                                      if(var != null){
+                                             System.out.println("Variable initialized: " + id);
+                                      }else{
+                                             System.out.println("WARNING: Variable not initialized " + id);
+                                      }:};
+
+variable_initializers_e_aux ::= | variable_initializer:v{:RESULT = v;:};
+variable_initializers ::= variable_initializers:v COMMA variable_initializer
+                                         {:RESULT = v;:}
+			 | variable_initializer:v
+			   {:RESULT = v;:};
 variable_initializer ::= EQUAL expression:e {:RESULT = e;:}
 			| EQUAL LBRACE variable_initializers RBRACE | EQUAL LBRACE RBRACE;
 //############# end variables declarations ##############//
@@ -197,11 +217,11 @@ bracks_e_aux ::= | bracks_e_aux LBRACK RBRACK;
 
 expression_e_aux ::= | expression:e {:RESULT = e;:};
 
-expression ::= numeric_expression:n {:System.out.println(n);:}|  expression LPAREN expression RPAREN;
+expression ::= numeric_expression:n {:RESULT = n;:}|  expression LPAREN expression RPAREN;
 
 numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.println("Testing: "+te);:}//{:RESULT = te;:}
 		| numeric_expression:e1 PLUS:p testing_expression:e2  {:System.out.println(RESULT + "  ");:}
-		//{: RESULT = SemanticAnalyzer.checkAdditiveExp(e2.toString(), p, e1);:}
+		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e2.toString(), p, e1);:}
 
 		| numeric_expression:e1 MINUS:m testing_expression:e2
 		{: RESULT = SemanticAnalyzer.checkAdditiveExp(e1.toString(), m, e2); :}
@@ -221,7 +241,7 @@ numeric_expression ::= testing_expression:te {:RESULT = te;:}//{:System.out.prin
 		| numeric_expression MULTEQ testing_expression
 		| numeric_expression MODEQ testing_expression;
 
-testing_expression ::= logical_expression:le {:RESULT = le;System.out.println(6);:}
+testing_expression ::= logical_expression:le {:RESULT = le;:}
 		| testing_expression:e1 GREATER:g logical_expression:e2
 //		{: RESULT = SemanticAnalyzer.checkRelationalExp(e1.toString(), g, e2); :}
 
@@ -237,7 +257,7 @@ testing_expression ::= logical_expression:le {:RESULT = le;System.out.println(6)
 		| testing_expression EQEQ logical_expression
 		| testing_expression NOTEQ logical_expression;
 
-logical_expression ::= bit_expression:be {:RESULT = be;System.out.println(5);:}
+logical_expression ::= bit_expression:be {:RESULT = be;:}
 		| NOT bit_expression
 		| logical_expression AND bit_expression
 		| logical_expression ANDEQ bit_expression
@@ -249,7 +269,7 @@ logical_expression ::= bit_expression:be {:RESULT = be;System.out.println(5);:}
 		| logical_expression OROR bit_expression
 		| logical_expression QUESTION expression COLON bit_expression;
 
-bit_expression ::= casting_expression:ce {:RESULT = ce;System.out.println(4);:}
+bit_expression ::= casting_expression:ce {:RESULT = ce;:}
 		| BITNOT casting_expression
 		| bit_expression RSHIFTEQ casting_expression
 		| bit_expression RSHIFT casting_expression
@@ -257,11 +277,11 @@ bit_expression ::= casting_expression:ce {:RESULT = ce;System.out.println(4);:}
 		| bit_expression URSHIFT casting_expression
 		| bit_expression LSHIFTEQ casting_expression;
 
-casting_expression ::= creating_expression:ce {:RESULT = ce;System.out.println(3);:}
+casting_expression ::= creating_expression:ce {:RESULT = ce;:}
 		| LPAREN type RPAREN creating_expression
 		| parentheses_expression identifier;
 
-creating_expression ::= expression_end:e {:RESULT = e;System.out.println(2);:}
+creating_expression ::= expression_end:e {:RESULT = e;:}
 		| NEW package_name LPAREN argslist_e_aux RPAREN
 		| type LBRACK expression RBRACK bracks_e_aux
 		| package_name LBRACK expression RBRACK bracks_e_aux
@@ -271,7 +291,7 @@ creating_expression ::= expression_end:e {:RESULT = e;System.out.println(2);:}
 		| creating_expression PLUSPLUS
 		| creating_expression MINUSMINUS;
 
-expression_end ::= identifier:id {:RESULT = new Variable(id.toString(), null, "integer_literal", id); System.out.println(id.toString() + "  <==  ID"); :}
+expression_end ::= identifier:id {:RESULT = new Variable(id.toString(), null, "integer_literal", id);:}
 		  | SUPER | THIS | parentheses_expression
 		 | LBRACK expression RBRACK | package_name INSTANCEOF package_name
 			 | literal:l {:RESULT = l;:};
@@ -322,12 +342,21 @@ throw_expression ::= THROW expression_e_aux SEMICOLON;
 if_else_statement ::= IF LPAREN expression RPAREN if_nested_statement ELSE statement;
 if_nested_statement ::= partial_statement_end;
 if_statement ::= IF LPAREN expression RPAREN statement;
+
 //#############end condição##############//
 
 
 //#############Laço while (ou do while)##############//
 do_statement ::= DO statement WHILE LPAREN expression RPAREN SEMICOLON;
-while_statement ::= WHILE LPAREN expression RPAREN statement;
+while_statement ::= WHILE LPAREN expression:e RPAREN statement
+                                  {:if(!(e.toString().equals("bool_literal true = true")
+                                        || (e.toString().equals("bool_literal false = false")))
+                                        ){
+                                        System.err.println("SEMANTIC ERROR: Expression '" + e + "' may not be boolean");
+                                  }:}
+                                 ;
+common_while ::= WHILE LPAREN;
+
 //############# end Laço while##############//
 
 //#############Laço for##############//
@@ -369,10 +398,27 @@ parameter_e ::= parameter | parameter_e COMMA parameter;
 
 
 
-statement_variable_declaration ::= FINAL type variable_declarators SEMICOLON
-		| type variable_declarators SEMICOLON
+statement_variable_declaration ::= FINAL type:t variable_declarators:v SEMICOLON
+				{:RESULT = new Variable(v.toString(), null, t.toString(), v) ;
+                                                        System.out.println("FInal Variable declareted: " + v);
+                                                   :}
+		| type:t variable_declarators:v SEMICOLON
+		{:RESULT = new Variable(v.toString(), null, t.toString(), v) ;
+                                 System.out.println("Variable declareted: " + v);
+                          :}
 		| variable_declarator_this_super SEMICOLON
-		| package_name EQUAL expression SEMICOLON;
+		| package_name EQUAL expression SEMICOLON
+
+	//	| variable_declarators:v SEMICOLON
+	//	{: System.err.println("Variable not declareted, name: " + v);:}
+		| EQUAL expression:e SEMICOLON
+		{: System.err.println("SYNTACTIC ERROR: Missing package name or id at:  " + e );:}
+		| package_name:p EQUAL  SEMICOLON
+		{: System.err.println("SYNTACTIC ERROR: Missing expression after '" + p + " =' "  );:}
+	//	| type:t variable_declarators:v
+	//	{: System.err.println("Missing semicolon at " + v);:}
+
+		;
 
 
 variable_declarator_this_super ::= this_super_prefix identifier bracks_e_aux variable_initializers_e_aux;
@@ -380,5 +426,6 @@ variable_declarator_this_super ::= this_super_prefix identifier bracks_e_aux var
 this_super_prefix ::= THIS DOT | SUPER DOT;
 
 //################################## errors ############################
-error1 ::= BREAK SEMICOLON {:System.err.println("Break statement not found, cannot use 'break' without an iteration");:};
+error1 ::= BREAK SEMICOLON {:
+              System.err.println("SYNTACTIC ERROR: Break statement found, cannot use 'break' without an iteration");:};
 
