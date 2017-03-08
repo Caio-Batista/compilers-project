@@ -1,0 +1,111 @@
+import java_cup.runtime.*;
+
+parser code {:
+
+    public void report_error(String message, Object info) {
+        StringBuilder m = new StringBuilder("Error");
+
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+
+            if (s.left >= 0) {
+                m.append(" in line "+(s.left));
+                if (s.right >= 0)
+                    m.append(", column "+(s.right));
+            }
+        }
+
+        m.append(" : "+message);
+
+        /* Print the contents of the StringBuilder 'm', which contains
+           an error message, out on a line. */
+        System.err.println(m);
+    }
+
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+
+// terminais
+terminal CLASS, EXTENDS, IMPLEMENTS, INTERFACE, NEW, BREAK, CASE;
+terminal CONTINUE, DEFAULT, DO, IF, ELSE, FOR, RETURN, SWITCH;
+terminal WHILE, ASSERT, TRY, CATCH, FINALLY, THROW, THROWS, IMPORT;
+terminal PACKAGE, BYTE, CONST, ABSTRACT, FINAL, NATIVE, SYNCHRONIZED;
+terminal TRANSIENT, VOLATILE, STRICTFP, PUBLIC, PROTECTED, PRIVATE;
+terminal STATIC, VOID, NULL, SUPER, THIS, INSTANCEOF, BOOLEAN, BYTE;
+terminal CHAR, SHORT, INT, FLOAT, LONG, DOUBLE, STRING, TRUE, FALSE;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK, SEMICOLON;
+terminal COMMA, DOT, EQUAL, GREATER, LESS, NOT, BITNOT, QUESTION;
+terminal COLON, EQEQ, LTEQ, GTEQ, NOTEQ, ANDAND, OROR, PLUSPLUS;
+terminal MINUSMINUS, PLUS, MINUS, MULT, DIV, AND, OR, XOR, MOD;
+terminal LSHIFT, RSHIFT, URSHIFT, PLUSEQ, MINUSEQ, MULTEQ, DIVEQ;
+terminal ANDEQ, OREQ, XOREQ, MODEQ, LSHIFTEQ, RSHIFTEQ;
+
+// nao terminais
+
+non terminal compilation_unit, package_declaration;
+non terminal import_declarations, import_declaration;
+non terminal single_type_import_declaration, type_import_on_demand_declaration;
+non terminal type_declarations, type_declaration, class_declaration;
+non terminal class_modifiers, class_modifier, super, interfaces;
+non terminal interface_type_list, class_body, class_body_declarations;
+non terminal class_body_declaration, class_member_declaration;
+non terminal static_initializer, constructor_declaration;
+non terminal constructor_modifiers, constructor_modifier;
+non terminal constructor_declarator, formal_parameter_list;
+non terminal formal_parameter, throws, class_type_list;
+non terminal constructor_body, explicit_constructor_invocation;
+non terminal field_declaration, field_modifiers, field_modifier;
+non terminal variable_declarators, variable_declarator;
+non terminal variable_declarator_id, variable_initializer;
+non terminal method_declaration, method_header, result_type;
+non terminal method_modifiers, method_modifier, method_declarator;
+non terminal method_body, interface_declaration, interface_modifiers;
+non terminal interface_modifier, extends_interfaces, interface_body;
+non terminal interface_member_declarations, interface_member_declaration;
+non terminal constant_declaration, constant_modifiers;
+non terminal abstract_method_declaration, abstract_method_modifiers;
+non terminal abstract_method_modifier, array_initializer;
+non terminal variable_initializers, variable_initializer;
+non terminal type, primitive_type, numeric_type, integral_type;
+non terminal floating-point_type, reference_type, class_or_interface_type;
+non terminal class_type, interface_type, array_type, block, block_statements;
+non terminal block_statement, local_variable_declaration_statement;
+non terminal local_variable_declaration, statement, statement_no_short_if;
+non terminal statement_without_trailing_substatement;
+non terminal empty_statement, labeled_statement, labeled_statement_no_short_if;
+non terminal expression_statement, statement_expression;
+non terminal
+non terminal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
